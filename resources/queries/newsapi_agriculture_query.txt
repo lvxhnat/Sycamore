@@ -1,0 +1,14 @@
+("corn" OR "maize" OR "barley" OR "wheat" OR "sorghum" OR crop OR harvest OR "rice" OR "ethanol" OR "rye" OR "oats" OR "oat" OR "cotton" OR "ground nut" OR "canola" OR sunflower 
+OR "grain" OR "grains" OR "cereal" OR feed OR livestock OR swine OR poultry OR futures OR commodity OR agriculture OR agricultural OR mining OR treasuries OR federal OR 
+oil OR diesel) AND
+
+("crop conditions" OR market OR bushels OR contract OR report  OR market
+OR strateg OR industrial OR industry OR futures OR session OR shipment OR "mt"
+OR import OR export OR demand OR supply OR analys OR price OR volatil OR crisis OR output OR stock OR tariff OR policy 
+OR optimist 
+OR drought OR weather OR frost OR heat OR cold OR rain OR flood OR moist OR rust OR disaster OR pest OR infest OR rainfall OR inventories OR inventory OR dry OR wet
+OR rise OR grow OR acre OR farm OR plant OR area OR dump OR burn OR produce OR producing OR produces OR soil OR pressure
+OR low OR high OR loss OR sell OR buy OR ease OR lose OR gain OR drop OR dip OR availabl OR long OR short OR profit OR margin OR steady OR bull OR bear OR yield OR rate)
+
+NOT (grilled OR menu OR cook OR adorable OR recipe OR bread OR bake OR microwaveable OR shirt OR aromatherapy 
+OR dumpling OR breakfast OR ingredient OR sauce OR flavor OR dessert OR towel OR "wholesale price")
