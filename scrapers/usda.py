@@ -1,13 +1,16 @@
 import re
+import sys
 import requests
 import numpy as np
 import pandas as pd
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-from sycamore.alerts.typeprompts import NASSCropProductionInfo
-from sycamore.alerts.logger import logger
-from sycamore.scrapers.base import BaseClient
+sys.path.append("...")
+
+from alerts.typeprompts import NASSCropProductionInfo
+from alerts.logger import logger
+from scrapers.base import BaseClient
 
 
 class USDAScraperClient(BaseClient):

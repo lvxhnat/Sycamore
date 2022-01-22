@@ -1,14 +1,17 @@
 import os
+import sys
 import pandas as pd
+
+sys.path.append("...")
 
 from typing import Optional, Tuple
 from fastapi import APIRouter, HTTPException, Query
 
-from sycamore.basemodels import twitter, writetypes
-from sycamore.scrapers.twitter import TwitterScraperClient
-from sycamore.utils.storage_utils import StorageUtility
-from sycamore.utils.cleaning_utils import CleaningUtility
-from sycamore.alerts.logger import logger
+from basemodels import twitter, writetypes
+from scrapers.twitter import TwitterScraperClient
+from utils.storage_utils import StorageUtility
+from utils.cleaning_utils import CleaningUtility
+from alerts.logger import logger
 
 
 router = APIRouter(

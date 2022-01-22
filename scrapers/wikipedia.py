@@ -1,3 +1,4 @@
+import sys
 import time
 import aiohttp
 import asyncio
@@ -5,9 +6,11 @@ import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 
-from sycamore.alerts.exceptions import WikipediaExcessiveRequests, WikipediaInvalidPathParameters
-from sycamore.alerts.runtime import logruntime
-from sycamore.alerts.logger import logger
+sys.path.append("...")
+
+from alerts.exceptions import WikipediaExcessiveRequests, WikipediaInvalidPathParameters
+from alerts.runtime import logruntime
+from alerts.logger import logger
 
 
 class WikipediaScraperClient:

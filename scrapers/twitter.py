@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import math
 import queue
@@ -8,10 +9,12 @@ import concurrent.futures
 from collections import deque
 from typing import List, Optional, Iterable
 
+sys.path.append("...")
+
 from dotenv import load_dotenv
 from more_itertools import chunked
 
-from sycamore.alerts.logger import logger
+from alerts.logger import logger
 load_dotenv()
 
 

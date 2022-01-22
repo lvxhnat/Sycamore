@@ -1,9 +1,12 @@
-import dotenv
 import os
+import sys
+import dotenv
 
-from sycamore.alerts.logger import logger
-from sycamore.scrapers.base import BaseClient
-from sycamore.utils.cleaning_utils import textualtime_to_timestring
+sys.path.append("...")
+
+from alerts.logger import logger
+from scrapers.base import BaseClient
+from utils.cleaning_utils import textualtime_to_timestring
 
 import warnings
 import re

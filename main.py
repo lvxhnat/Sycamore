@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
-from sycamore.routers import api
+from routers import api
 
 app = FastAPI(
     title="Sycamore",

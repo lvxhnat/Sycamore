@@ -1,11 +1,14 @@
-from datetime import datetime, timedelta
-import pandas as pd
-import requests
-import time
 import re
+import sys
+import time
+import requests
+import pandas as pd
+from datetime import datetime, timedelta
 
-from sycamore.alerts.logger import logger
-from sycamore.scrapers.base import BaseClient
+sys.path.append("...")
+
+from alerts.logger import logger
+from scrapers.base import BaseClient
 
 
 class AssetScraperClient(BaseClient):

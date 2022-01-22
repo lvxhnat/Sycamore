@@ -1,16 +1,19 @@
 import os
+import sys 
 import pandas as pd
+
+sys.path.append("...")
 
 from typing import Optional, Tuple
 from fastapi import APIRouter, HTTPException, Query
 
-from sycamore.scrapers.eia import EIAScraperClient
-from sycamore.scrapers.usda import USDAScraperClient
+from scrapers.eia import EIAScraperClient
+from scrapers.usda import USDAScraperClient
 
-from sycamore.params.output.agriculture import AgriculturalOutput
-from sycamore.basemodels import agriculture, writetypes
-from sycamore.utils.storage_utils import StorageUtility
-from sycamore.alerts.logger import logger
+from params.output.agriculture import AgriculturalOutput
+from basemodels import agriculture, writetypes
+from utils.storage_utils import StorageUtility
+from alerts.logger import logger
 
 router = APIRouter(
     prefix="/agriculture",

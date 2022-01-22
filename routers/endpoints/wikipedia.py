@@ -1,13 +1,15 @@
+import sys
 import logging
 import pandas as pd
 
+sys.path.append("...")
 
 from fastapi import APIRouter, HTTPException, Query
 
-from sycamore.basemodels import wikipedia, writetypes
-from sycamore.scrapers.wikipedia import WikipediaScraperClient
-from sycamore.utils.storage_utils import StorageUtility
-from sycamore.utils.cleaning_utils import CleaningUtility
+from basemodels import wikipedia, writetypes
+from scrapers.wikipedia import WikipediaScraperClient
+from utils.storage_utils import StorageUtility
+from utils.cleaning_utils import CleaningUtility
 
 router = APIRouter(
     prefix="/wiki",
