@@ -5,5 +5,5 @@ __pycache__
 *.csv
 *.ipynb
 venv
-output
+resources/documents/twitter/output
 
