@@ -62,7 +62,7 @@ class EIAScraperClient:
         try:
             response = requests.get(url).text
 
-            soup = BeautifulSoup(response)
+            soup = BeautifulSoup(response, "lxml")
 
             data = []
             table_body = soup.find('tbody')

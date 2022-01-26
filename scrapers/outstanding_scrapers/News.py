@@ -143,7 +143,7 @@ class NewsScraperClient(BaseClient):
 
         try:
             agricensus_headlines = BeautifulSoup(requests.get(
-                "https://www.agricensus.com/news/").text, features="html.parser").find_all("div", {"class": "news-list-block shadow-box"})
+                "https://www.agricensus.com/news/").text, features="html.parser").find_all("div", {"class": "news-list-block shadow-box"}, "lxml")
 
             agricensus_page1_data = []
 

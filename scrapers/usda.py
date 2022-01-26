@@ -42,7 +42,7 @@ class USDAScraperClient(BaseClient):
 
         try:
             soup = BeautifulSoup(requests.get(
-                "https://www.usda.gov/media/agency-reports").text)
+                "https://www.usda.gov/media/agency-reports").text, "lxml")
 
             tag_dates = soup.find_all(lambda tag: tag.name == 'h3' and str(
                 datetime.now().year) in tag.get_text())
@@ -117,7 +117,7 @@ class USDAScraperClient(BaseClient):
 
         try:
             soup = BeautifulSoup(requests.get(
-                "https://usda.library.cornell.edu/concern/publications/tm70mv177?locale=en").text)
+                "https://usda.library.cornell.edu/concern/publications/tm70mv177?locale=en").text, "lxml")
 
             attr_upcoming_release = soup.find_all(
                 "span", {"class": "attribute upcoming_releases"})

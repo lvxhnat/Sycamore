@@ -10,7 +10,7 @@ from fastapi import APIRouter, HTTPException, Query
 from scrapers.eia import EIAScraperClient
 from scrapers.usda import USDAScraperClient
 
-from params.output.agriculture import AgriculturalOutput
+from params.agriculture import AgriculturalParams
 from basemodels import agriculture, writetypes
 from utils.storage_utils import StorageUtility
 from alerts.logger import logger
@@ -20,7 +20,7 @@ router = APIRouter(
 )
 
 
-@router.get("/ethanolprod", response_model=AgriculturalOutput)
+@router.get("/ethanolprod", response_model=AgriculturalParams)
 def scrape_and_write_weekly_ethanol_production(
         write_type: Optional[writetypes.StorageWriteType] = "localstorage") -> Tuple[pd.DataFrame, str]:
     '''
@@ -46,10 +46,10 @@ def scrape_and_write_weekly_ethanol_production(
         "Agriculture Ethanol Production Scraper: Ethanol production data extraction completed")
     logger.info(f"Data written to {write_location} storage under path: {storage_url}")
 
-    return ethanol_data
+    return { "write_location": write_location }
 
 
-@router.get("/ethanolstock", response_model=AgriculturalOutput)
+@router.get("/ethanolstock", response_model=AgriculturalParams)
 def scrape_and_write_weekly_ethanol_ending_stocks(
         write_type: Optional[writetypes.StorageWriteType] = "localstorage") -> Tuple[pd.DataFrame, str]:
     '''
@@ -75,10 +75,10 @@ def scrape_and_write_weekly_ethanol_ending_stocks(
         "Agriculture Ethanol Ending Stock Scraper: Ethanol ending stock data extraction completed")
     logger.info(f"Data written to {write_location} storage under path: {storage_url}")
 
-    return ethanol_data
+    return { "write_location": write_location }
 
 
-@router.get("/cropreports", response_model=AgriculturalOutput)
+@router.get("/cropreports", response_model=AgriculturalParams)
 def scrape_and_write_usda_crop_production_reports(
         write_type: Optional[writetypes.StorageWriteType] = "localstorage") -> Tuple[pd.DataFrame, str]:
     '''
@@ -104,4 +104,4 @@ def scrape_and_write_usda_crop_production_reports(
         "Agriculture Crop Production Reports Scraper: Crop production report urls extraction completed")
     logger.info(f"Data written to {write_location} storage under path: {storage_url}")
 
-    return crop_production_report_data
+    return { "write_location": write_location }

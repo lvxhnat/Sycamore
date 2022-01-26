@@ -31,7 +31,7 @@ def searchSession(search: str = "1LIFE HEALTHCARE"):
 def getSP500Companies():
 
     soup = BeautifulSoup(requests.get(
-        "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies").text)
+        "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies").text, "lxml")
     sp500 = soup.find_all("table")[0]
     sp500_changes = soup.find_all("table")[1]
 
@@ -85,7 +85,7 @@ def getUSExchangeStocks():
     for denomination in tqdm(nyse_denominations):
 
         soup = BeautifulSoup(requests.get(
-            f"https://en.wikipedia.org/wiki/Companies_listed_on_the_New_York_Stock_Exchange_({denomination})").text)
+            f"https://en.wikipedia.org/wiki/Companies_listed_on_the_New_York_Stock_Exchange_({denomination})").text, "lxml")
         # First table is the one that allows u to browse
         items = soup.find_all("table")[1].find_all("td")
 
@@ -105,7 +105,7 @@ def getUSExchangeStocks():
     for denomination in tqdm(nasdaq_denominations):
 
         soup = BeautifulSoup(requests.get(
-            f"https://en.wikipedia.org/w/index.php?title=Category:Companies_listed_on_the_Nasdaq&from={denomination}").text)
+            f"https://en.wikipedia.org/w/index.php?title=Category:Companies_listed_on_the_Nasdaq&from={denomination}").text, "lxml")
 
         atags = [i for i in list(map(lambda x: x.find(
             'a', href=re.compile(r'^/wiki/*')), soup.find_all("li"))) if i != None]
