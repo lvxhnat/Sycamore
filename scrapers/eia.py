@@ -55,7 +55,7 @@ class EIAScraperClient:
         df.reset_index(drop=True, inplace=True)
         return df
 
-    def base_ethanol_scraper(url):
+    def base_ethanol_scraper(self, url):
         ''' For usage guidelines, refer to the top two get_ methods
         '''
 

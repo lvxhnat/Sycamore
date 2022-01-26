@@ -22,7 +22,6 @@ router = APIRouter(
 
 @router.get("/ethanolprod", response_model=AgriculturalOutput)
 def scrape_and_write_weekly_ethanol_production(
-        params: agriculture.DefaultAgriculturalBaseModel,
         write_type: Optional[writetypes.StorageWriteType] = "localstorage") -> Tuple[pd.DataFrame, str]:
     '''
     Get the weekly ethanol production levels in continental united states
@@ -31,7 +30,7 @@ def scrape_and_write_weekly_ethanol_production(
 
     ethanol_api_client = EIAScraperClient()
 
-    ethanol_data = asset_api_client.get_weekly_ethanol_production_levels()
+    ethanol_data = ethanol_api_client.get_weekly_ethanol_production_levels()
 
     storage_util = StorageUtility()
     storage_url = storage_util.store_items(
@@ -45,13 +44,13 @@ def scrape_and_write_weekly_ethanol_production(
         '__file__')) + "/" + storage_url.replace("..", "")
     logger.info(
         "Agriculture Ethanol Production Scraper: Ethanol production data extraction completed")
+    logger.info(f"Data written to {write_location} storage under path: {storage_url}")
 
-    return(ethanol_data, f"Data written to {write_location} storage under path: {storage_url}")
+    return ethanol_data
 
 
 @router.get("/ethanolstock", response_model=AgriculturalOutput)
 def scrape_and_write_weekly_ethanol_ending_stocks(
-        params: agriculture.DefaultAgriculturalBaseModel,
         write_type: Optional[writetypes.StorageWriteType] = "localstorage") -> Tuple[pd.DataFrame, str]:
     '''
     Get the weekly ethanol production levels in continental united states
@@ -60,7 +59,7 @@ def scrape_and_write_weekly_ethanol_ending_stocks(
 
     ethanol_api_client = EIAScraperClient()
 
-    ethanol_data = asset_api_client.get_weekly_ethanol_ending_stocks()
+    ethanol_data = ethanol_api_client.get_weekly_ethanol_ending_stocks()
 
     storage_util = StorageUtility()
     storage_url = storage_util.store_items(
@@ -74,13 +73,13 @@ def scrape_and_write_weekly_ethanol_ending_stocks(
         '__file__')) + "/" + storage_url.replace("..", "")
     logger.info(
         "Agriculture Ethanol Ending Stock Scraper: Ethanol ending stock data extraction completed")
+    logger.info(f"Data written to {write_location} storage under path: {storage_url}")
 
-    return(ethanol_data, f"Data written to {write_location} storage under path: {storage_url}")
+    return ethanol_data
 
 
 @router.get("/cropreports", response_model=AgriculturalOutput)
 def scrape_and_write_usda_crop_production_reports(
-        params: agriculture.DefaultAgriculturalBaseModel,
         write_type: Optional[writetypes.StorageWriteType] = "localstorage") -> Tuple[pd.DataFrame, str]:
     '''
     Get the weekly ethanol production levels in continental united states
@@ -103,5 +102,6 @@ def scrape_and_write_usda_crop_production_reports(
         '__file__')) + "/" + storage_url.replace("..", "")
     logger.info(
         "Agriculture Crop Production Reports Scraper: Crop production report urls extraction completed")
+    logger.info(f"Data written to {write_location} storage under path: {storage_url}")
 
-    return(crop_production_report_data, f"Data written to {write_location} storage under path: {storage_url}")
+    return crop_production_report_data

@@ -3,4 +3,4 @@ from pydantic import BaseModel
 
 
 class AgriculturalOutput(BaseModel):
-    output: int
+    pass
