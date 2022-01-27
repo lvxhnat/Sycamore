@@ -33,10 +33,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/", include_in_schema=False)
 def home_page():
     response = RedirectResponse(url="/docs")
     return response
+
 
 @app.post("/requestauthtoken")
 @limiter.limit("5/minute")
@@ -47,13 +49,15 @@ async def request_auth_token(request: Request):
         _pass = params['password']
         print(_user, _pass)
         authenticated = auth_utils.verify_credentials(_user, _pass)
-        if authenticated: 
+        if authenticated:
             access_token = auth_utils.generate_token(_user)
-            return { "access_token" : access_token }
-        else: 
-            raise HTTPException(status_code = 401, detail = "Invalid Username or Password Supplied")    
+            return {"access_token": access_token}
+        else:
+            raise HTTPException(
+                status_code=401, detail="Invalid Username or Password Supplied")
     except:
-        raise HTTPException(status_code = 401, detail = "Invalid Payload Headers Supplied. Make sure payload contains username and password fields")
+        raise HTTPException(
+            status_code=401, detail="Invalid Payload Headers Supplied. Make sure payload contains username and password fields")
 
 app.include_router(api.api_router, prefix="/api")
 
