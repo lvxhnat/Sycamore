@@ -32,6 +32,7 @@ class GoogleSheetUtility:
         return [x["properties"]["title"] for x in sheet.get(spreadsheetId=spreadsheet_id).execute()["sheets"]]
 
     def create_gsheets(
+            self,
             spreadsheet_id: str,
             sheet_name: str,
             sheet: str = None):
