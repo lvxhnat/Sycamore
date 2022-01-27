@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 from datetime import datetime
+import ast
 
 
 def CryptoHistoricalData_GEMINIAPI(symbol: str = "btcusd"):
