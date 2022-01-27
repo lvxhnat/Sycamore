@@ -10,8 +10,9 @@ from fastapi import APIRouter, HTTPException, Query
 from scrapers.eia import EIAScraperClient
 from scrapers.usda import USDAScraperClient
 
-from params.agriculture import AgriculturalParams
-from basemodels import agriculture, writetypes
+from models.agriculture import AgriculturalResponse
+from models import writetypes
+
 from utils.storage_utils import StorageUtility
 from alerts.logger import logger
 
@@ -20,7 +21,7 @@ router = APIRouter(
 )
 
 
-@router.get("/ethanolprod", response_model=AgriculturalParams)
+@router.get("/ethanolprod", response_model=AgriculturalResponse)
 def scrape_and_write_weekly_ethanol_production(
         write_type: Optional[writetypes.StorageWriteType] = "localstorage") -> Tuple[pd.DataFrame, str]:
     '''
@@ -49,7 +50,7 @@ def scrape_and_write_weekly_ethanol_production(
     return { "write_location": write_location }
 
 
-@router.get("/ethanolstock", response_model=AgriculturalParams)
+@router.get("/ethanolstock", response_model=AgriculturalResponse)
 def scrape_and_write_weekly_ethanol_ending_stocks(
         write_type: Optional[writetypes.StorageWriteType] = "localstorage") -> Tuple[pd.DataFrame, str]:
     '''
@@ -78,7 +79,7 @@ def scrape_and_write_weekly_ethanol_ending_stocks(
     return { "write_location": write_location }
 
 
-@router.get("/cropreports", response_model=AgriculturalParams)
+@router.get("/cropreports", response_model=AgriculturalResponse)
 def scrape_and_write_usda_crop_production_reports(
         write_type: Optional[writetypes.StorageWriteType] = "localstorage") -> Tuple[pd.DataFrame, str]:
     '''

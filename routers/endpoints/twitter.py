@@ -7,7 +7,7 @@ sys.path.append("...")
 from typing import Optional, Tuple
 from fastapi import APIRouter, HTTPException, Query
 
-from basemodels import twitter, writetypes
+from models import twitter, writetypes
 from scrapers.twitter import TwitterScraperClient
 from utils.storage_utils import StorageUtility
 from utils.cleaning_utils import CleaningUtility
@@ -20,9 +20,9 @@ router = APIRouter(
 twitter_api_keys = 11  # Number of API Keys to deploy for twitter
 
 
-@router.post("/followings")
+@router.post("/followings", response_model=twitter.FollowingsResponse)
 def scrape_and_write_twitter_followings_task(
-        params: twitter.FollowingsBaseModel,
+        params: twitter.FollowingsParams,
         write_type: Optional[writetypes.StorageWriteType] = "localstorage") -> Tuple[pd.DataFrame, str]:
 
     neither_defined = (params.user_ids or params.screen_names) is None
@@ -60,9 +60,9 @@ def scrape_and_write_twitter_followings_task(
     return(twitter_followings_data, f"Data written to {write_location} storage under path: {storage_url}")
 
 
-@router.post("/followers")
+@router.post("/followers", response_model=twitter.FollowersResponse)
 def scrape_and_write_twitter_followers_task(
-        params: twitter.FollowersBaseModel,
+        params: twitter.FollowersParams,
         write_type: Optional[writetypes.StorageWriteType] = "localstorage") -> Tuple[pd.DataFrame, str]:
 
     neither_defined = (params.user_ids or params.screen_names) is None

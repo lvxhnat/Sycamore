@@ -16,10 +16,15 @@ class DefaultTwitterBaseModel(BaseModel):
             }
         }
 
+class FollowersResponse(BaseModel):
+    pass
 
-class FollowersBaseModel(DefaultTwitterBaseModel):
+class FollowingsResponse(BaseModel):
+    pass
+
+class FollowersParams(DefaultTwitterBaseModel):
     pass
 
 
-class FollowingsBaseModel(DefaultTwitterBaseModel):
+class FollowingsParams(DefaultTwitterBaseModel):
     pass

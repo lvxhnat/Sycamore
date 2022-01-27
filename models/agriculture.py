@@ -6,3 +6,6 @@ class DefaultAgriculturalBaseModel(BaseModel):
 
     class Config:
         pass
+
+class AgriculturalResponse(BaseModel):
+    pass
