@@ -1,8 +1,14 @@
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-import main
+app = FastAPI()
 
-client = TestClient(main.app)
+
+@app.get("/")
+async def read_main():
+    return {"msg": "Test"}
+
+client = TestClient(app)
 
 
 def test_read_main():
