@@ -1,16 +1,22 @@
-from alerts.logger import logger
-from utils.cleaning_utils import CleaningUtility
-from utils.storage_utils import StorageUtility
-from scrapers.twitter import TwitterScraperClient
-from models import twitter, writetypes
-from fastapi import APIRouter, HTTPException, Query
-from typing import Optional, Tuple
 import os
+import jwt
 import sys
 import uuid
 import time
 import pandas as pd
+from typing import Tuple
+from datetime import datetime
+from dotenv import load_dotenv
 
+from models import twitter
+from alerts.logger import logger
+from utils.storage_utils import StorageUtility
+from utils.cleaning_utils import CleaningUtility
+from scrapers.twitter import TwitterScraperClient
+
+from fastapi import APIRouter, HTTPException, Header
+
+load_dotenv()
 sys.path.append("...")
 
 
@@ -24,8 +30,10 @@ def check_user_length(s): return 0 if s is None else len(s)
 @router.post("/followings", response_model=twitter.FollowingsResponse)
 def scrape_and_write_twitter_followings_task(
         params: twitter.FollowingsParams,
-        write_type: Optional[writetypes.StorageWriteType] = "localstorage") -> Tuple[pd.DataFrame, str]:
-
+        token: str = Header(...),
+):
+    jwt_payload = jwt.decode(
+        token, os.environ['MASTER_SECRET_KEY'], algorithms=["HS256"])
     neither_defined = (params.user_ids or params.screen_names) is None
     endpoint = "twitter_followings"
 
@@ -53,7 +61,8 @@ def scrape_and_write_twitter_followings_task(
     storage_util = StorageUtility()
     storage_url = storage_util.store_items(
         twitter_followings_data,
-        write_type=write_type,
+        user=jwt_payload['user'],
+        write_type=params.write_type,
         endpoint_storage=endpoint)
 
     time_elapsed = round(time.time() - start_time)
@@ -64,21 +73,29 @@ def scrape_and_write_twitter_followings_task(
     logger.info(
         "Twitter Followings Scraper: Twitter followings extraction completed")
 
-    return {
+    extraction_metadata = {
+        "user": jwt_payload['user'],
+        "date_extracted": datetime.now().strftime("%Y-%m-%d %H:%M"),
         "job_id": str(uuid.uuid4()),
-        "write_type": write_type,
-        "users_requested": users_requested,
-        "users_requested_extracted": users_extracted,
+        "write_type": params.write_type,
+        "job_description": {
+            "users_requested": users_requested,
+            "users_requested_extracted": users_extracted,
+        },
         "time_elapsed_seconds": time_elapsed,
         "write_path": storage_url,
     }
+
+    return extraction_metadata
 
 
 @router.post("/followers", response_model=twitter.FollowersResponse)
 def scrape_and_write_twitter_followers_task(
         params: twitter.FollowersParams,
-        write_type: Optional[writetypes.StorageWriteType] = "localstorage") -> Tuple[pd.DataFrame, str]:
-
+        token: str = Header(...),
+):
+    jwt_payload = jwt.decode(
+        token, os.environ['MASTER_SECRET_KEY'], algorithms=["HS256"])
     neither_defined = (params.user_ids or params.screen_names) is None
     endpoint = "twitter_followers"
 
@@ -106,7 +123,8 @@ def scrape_and_write_twitter_followers_task(
     storage_util = StorageUtility()
     storage_url = storage_util.store_items(
         twitter_followers_data,
-        write_type=write_type,
+        write_type=params.write_type,
+        user=jwt_payload['user'],
         endpoint_storage=endpoint)
 
     time_elapsed = round(time.time() - start_time)
@@ -117,11 +135,16 @@ def scrape_and_write_twitter_followers_task(
     logger.info(
         "Twitter Followers Scraper: Twitter followers extraction completed")
 
-    return {
+    extraction_metadata = {
+        "user": jwt_payload['user'],
         "job_id": str(uuid.uuid4()),
-        "write_type": write_type,
-        "users_requested": users_requested,
-        "users_requested_extracted": users_extracted,
+        "write_type": params.write_type,
+        "job_description": {
+            "users_requested": users_requested,
+            "users_requested_extracted": users_extracted,
+        },
         "time_elapsed_seconds": time_elapsed,
         "write_path": storage_url,
     }
+
+    return extraction_metadata
