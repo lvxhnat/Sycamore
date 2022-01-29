@@ -1,23 +1,24 @@
+from alerts.logger import logger
+from utils.cleaning_utils import CleaningUtility
+from utils.storage_utils import StorageUtility
+from scrapers.twitter import TwitterScraperClient
+from models import twitter, writetypes
+from fastapi import APIRouter, HTTPException, Query
+from typing import Optional, Tuple
 import os
 import sys
+import uuid
+import time
 import pandas as pd
 
 sys.path.append("...")
-
-from typing import Optional, Tuple
-from fastapi import APIRouter, HTTPException, Query
-
-from models import twitter, writetypes
-from scrapers.twitter import TwitterScraperClient
-from utils.storage_utils import StorageUtility
-from utils.cleaning_utils import CleaningUtility
-from alerts.logger import logger
 
 
 router = APIRouter(
     prefix="/twitter",
 )
 twitter_api_keys = 11  # Number of API Keys to deploy for twitter
+def check_user_length(s): return 0 if s is None else len(s)
 
 
 @router.post("/followings", response_model=twitter.FollowingsResponse)
@@ -31,8 +32,10 @@ def scrape_and_write_twitter_followings_task(
     if neither_defined:
         raise HTTPException(
             status_code=404,
-            detail="One of screen id or screen name needs to be defined",
+            detail="Error 404: screen id or screen name needs to be defined",
         )
+
+    start_time = time.time()
 
     twitter_api_client = TwitterScraperClient(api_keys=twitter_api_keys)
 
@@ -43,6 +46,9 @@ def scrape_and_write_twitter_followings_task(
 
     twitter_followings_data = cleaning_util.clean_twitter_follows(
         twitter_followings_data)
+    users_extracted = twitter_followings_data.twitter_follower_id.nunique()
+    users_requested = check_user_length(
+        params.screen_names) + check_user_length(params.user_ids)
 
     storage_util = StorageUtility()
     storage_url = storage_util.store_items(
@@ -50,14 +56,22 @@ def scrape_and_write_twitter_followings_task(
         write_type=write_type,
         endpoint_storage=endpoint)
 
-    write_location = write_type.replace("storage", "")
+    time_elapsed = round(time.time() - start_time)
+
     # cd .. and join the storage url
     storage_url = os.path.dirname(os.path.realpath(
         '__file__')) + "/" + storage_url.replace("..", "")
     logger.info(
         "Twitter Followings Scraper: Twitter followings extraction completed")
 
-    return(twitter_followings_data, f"Data written to {write_location} storage under path: {storage_url}")
+    return {
+        "job_id": str(uuid.uuid4()),
+        "write_type": write_type,
+        "users_requested": users_requested,
+        "users_requested_extracted": users_extracted,
+        "time_elapsed_seconds": time_elapsed,
+        "write_path": storage_url,
+    }
 
 
 @router.post("/followers", response_model=twitter.FollowersResponse)
@@ -71,8 +85,10 @@ def scrape_and_write_twitter_followers_task(
     if neither_defined:
         raise HTTPException(
             status_code=404,
-            detail="One of screen id or screen name needs to be defined",
+            detail="Error 404: screen id or screen name needs to be defined"
         )
+
+    start_time = time.time()
 
     twitter_api_client = TwitterScraperClient(api_keys=twitter_api_keys)
 
@@ -83,6 +99,9 @@ def scrape_and_write_twitter_followers_task(
 
     twitter_followers_data = cleaning_util.clean_twitter_follows(
         twitter_followers_data)
+    users_extracted = twitter_followers_data.twitter_follower_id.nunique()
+    users_requested = check_user_length(
+        params.screen_names) + check_user_length(params.user_ids)
 
     storage_util = StorageUtility()
     storage_url = storage_util.store_items(
@@ -90,11 +109,19 @@ def scrape_and_write_twitter_followers_task(
         write_type=write_type,
         endpoint_storage=endpoint)
 
-    write_location = write_type.replace("storage", "")
+    time_elapsed = round(time.time() - start_time)
+
     # cd .. and join the storage url
     storage_url = os.path.dirname(os.path.realpath(
         '__file__')) + "/" + storage_url.replace("..", "")
     logger.info(
         "Twitter Followers Scraper: Twitter followers extraction completed")
 
-    return(twitter_followers_data, f"Data written to {write_location} storage under path: {storage_url}")
+    return {
+        "job_id": str(uuid.uuid4()),
+        "write_type": write_type,
+        "users_requested": users_requested,
+        "users_requested_extracted": users_extracted,
+        "time_elapsed_seconds": time_elapsed,
+        "write_path": storage_url,
+    }
