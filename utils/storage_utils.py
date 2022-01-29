@@ -36,6 +36,12 @@ class StorageUtility:
     def write_items(self, write_type: str):
         write_type = write_type.translate(str.maketrans(
             '', '', string.punctuation)).lower().strip(" ")
+        if os.environ['ENVIRONMENT'] == "dev":
+            assert write_type in ['localstorage',
+                                  'cloudstorage', 'databasestorage'], "Please enter a valid write type"
+        elif os.environ['ENVIRONMENT'] == "prod":
+            assert write_type in [
+                'databasestorage', 'cloudstorage'], "Ensure write type is either databasestorage or cloudstorage"
 
         if write_type == "localstorage":
             return self.write_to_local_storage

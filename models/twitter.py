@@ -1,9 +1,9 @@
-import os
 from dotenv import load_dotenv
 from datetime import datetime
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict
-from models import writetypes
+
+from .writetype import storage_type
 load_dotenv()
 
 
@@ -12,12 +12,13 @@ class DefaultTwitterParamsBaseModel(BaseModel):
         None, description="List of user id strings or integers in format: [...] or [..., ..., ...]")
     screen_names: List[str] = Field(
         None, description="List of user id strings or integers in format: [...] or [..., ..., ...]")
-    write_type: Optional[writetypes.StorageWriteType] = os.environ['DEFAULT_WRITE_TYPE']
+    write_type: Optional[storage_type] = "cloudstorage"
 
     class Config:
         schema_extra = {
             "example": {
                 "user_ids": ["320524842", "985839765693059072", "1323090848", "173149432", "36724495"],
+                "write_type": "cloudstorage",
                 "screen_names": None
             }
         }
