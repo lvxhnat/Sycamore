@@ -14,9 +14,20 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
 limiter = Limiter(key_func=get_remote_address)
+description = """ 
+Sycamore is a data extraction application for data needs, allowing you to see the world in context 🌎 \n 
+Sycamore scrapes and cleans data via Scrapers (Scrapy, Requests) and API calls asynchronously. A choice is then given to either store data in Google Cloud (GCS), MongoDB or Locally (If you do decide to pull down the codebase and run locally). 
+\n\n 
+Please contact me for an auth token if you wish to share the data available here!
+"""
 app = FastAPI(
     title="Sycamore",
-    description="Sycamore is a scraper designed for use within the heron project environment, tailored for financial related data endpoints",
+    description=description,
+    version="0.0.1",
+    contact={
+        "name": "Yi Kuang",
+        "email": "yikuang5@gmail.com"
+    }
 )
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
@@ -40,7 +51,7 @@ def home_page():
     return response
 
 
-@app.post("/requestauthtoken")
+@app.post("/requestauthtoken", tags=["Authentication"],)
 @limiter.limit("5/minute")
 async def request_auth_token(request: Request):
     try:
