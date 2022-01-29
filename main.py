@@ -47,7 +47,6 @@ async def request_auth_token(request: Request):
         params = await request.form()
         _user = params['username']
         _pass = params['password']
-        print(_user, _pass)
         authenticated = auth_utils.verify_credentials(_user, _pass)
         if authenticated:
             access_token = auth_utils.generate_token(_user)
