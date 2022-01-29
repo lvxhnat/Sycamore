@@ -4,7 +4,6 @@ import sys
 import uuid
 import time
 import pandas as pd
-from typing import Tuple
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -13,6 +12,7 @@ from alerts.logger import logger
 from utils.storage_utils import StorageUtility
 from utils.cleaning_utils import CleaningUtility
 from scrapers.twitter import TwitterScraperClient
+from decorators.endpointdec import store_mongodb_metadata
 
 from fastapi import APIRouter, HTTPException, Header
 
@@ -28,6 +28,7 @@ def check_user_length(s): return 0 if s is None else len(s)
 
 
 @router.post("/followings", response_model=twitter.FollowingsResponse)
+@store_mongodb_metadata
 def scrape_and_write_twitter_followings_task(
         params: twitter.FollowingsParams,
         token: str = Header(...),
@@ -67,12 +68,6 @@ def scrape_and_write_twitter_followings_task(
 
     time_elapsed = round(time.time() - start_time)
 
-    # cd .. and join the storage url
-    storage_url = os.path.dirname(os.path.realpath(
-        '__file__')) + "/" + storage_url.replace("..", "")
-    logger.info(
-        "Twitter Followings Scraper: Twitter followings extraction completed")
-
     extraction_metadata = {
         "user": jwt_payload['user'],
         "date_extracted": datetime.now().strftime("%Y-%m-%d %H:%M"),
@@ -90,6 +85,7 @@ def scrape_and_write_twitter_followings_task(
 
 
 @router.post("/followers", response_model=twitter.FollowersResponse)
+@store_mongodb_metadata
 def scrape_and_write_twitter_followers_task(
         params: twitter.FollowersParams,
         token: str = Header(...),
@@ -128,12 +124,6 @@ def scrape_and_write_twitter_followers_task(
         endpoint_storage=endpoint)
 
     time_elapsed = round(time.time() - start_time)
-
-    # cd .. and join the storage url
-    storage_url = os.path.dirname(os.path.realpath(
-        '__file__')) + "/" + storage_url.replace("..", "")
-    logger.info(
-        "Twitter Followers Scraper: Twitter followers extraction completed")
 
     extraction_metadata = {
         "user": jwt_payload['user'],

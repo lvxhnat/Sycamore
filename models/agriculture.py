@@ -1,11 +1,23 @@
-from pydantic import BaseModel, Field
-from typing import Dict
+from pydantic import Field
+from .base import DefaultBaseModel
+from datetime import datetime
 
 
-class DefaultAgriculturalBaseModel(BaseModel):
+class DefaultAgriculturalResponseBaseModel(DefaultBaseModel):
 
     class Config:
-        pass
+        schema_extra = {
+            "example": {
+                "user": "james201",
+                "date_extracted": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                "job_id": '12c6f2a1-8022-4965-b5fe-e210b7e4deba',
+                "write_type": 'localstorage',
+                "job_description": {},
+                "time_elapsed_seconds": 43411,
+                "write_path": 'gs://some-bucket/data/agriculture/ethanolprod/0003_202103120505/'
+            }
+        }
 
-class AgriculturalResponse(BaseModel):
+
+class AgriculturalResponse(DefaultAgriculturalResponseBaseModel):
     pass

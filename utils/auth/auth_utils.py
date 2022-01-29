@@ -1,11 +1,14 @@
-import jwt
 import os
-
+import jwt
+import sys
 import bcrypt
-from pymongo import MongoClient
-
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
+
+from databases.mongodbclients import user_collection
+
+sys.path.append("...")
+
 
 load_dotenv()
 
@@ -31,12 +34,8 @@ def verify_token(jwt_token: str):
 
 def verify_credentials(username: str, password: str):
     try:
-        client = MongoClient('mongodb+srv://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] +
-                             '@' + os.environ['MONGODB_CLUSTERNAME'] + '.nsb6k.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
-        database = client['Visser']
-        collection = database['users']
-
-        user_document = collection.find_one({"username": username})
+        user_document = user_collection.find_one(
+            {"username": username})
         auth = bcrypt.checkpw(str.encode(password),
                               str.encode(user_document['password']))
         return auth

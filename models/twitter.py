@@ -1,8 +1,9 @@
 from dotenv import load_dotenv
 from datetime import datetime
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict
+from typing import List, Optional
 
+from .base import DefaultBaseModel
 from .writetype import storage_type
 load_dotenv()
 
@@ -24,14 +25,7 @@ class DefaultTwitterParamsBaseModel(BaseModel):
         }
 
 
-class DefaultTwitterResponseBaseModel(BaseModel):
-    user: str
-    job_id: str
-    write_type: str
-    write_path: str
-    date_extracted: str
-    job_description: Dict[str, str]
-    time_elapsed_seconds: int
+class DefaultTwitterResponseBaseModel(DefaultBaseModel):
 
     class Config:
         schema_extra = {

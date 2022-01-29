@@ -1,3 +1,6 @@
+from alerts.logger import logger
+from more_itertools import chunked
+from dotenv import load_dotenv
 import os
 import sys
 import time
@@ -11,10 +14,7 @@ from typing import List, Optional, Iterable
 
 sys.path.append("...")
 
-from dotenv import load_dotenv
-from more_itertools import chunked
 
-from alerts.logger import logger
 load_dotenv()
 
 
@@ -449,7 +449,7 @@ class TwitterScraperClient:
             # Skip as long as tweep error occurs
             except Exception:
                 # Unknown Errors
-                logger.exception(
+                logger.error(
                     f"Twitter {relationship_type}: Skipping extraction for {user_str}, unexpected error occurred.")
                 ids = []
                 break
