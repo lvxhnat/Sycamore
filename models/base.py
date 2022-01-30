@@ -5,6 +5,7 @@ from typing import Dict
 class DefaultBaseModel(BaseModel):
     user: str
     job_id: str
+    end_point: str
     write_type: str
     write_path: str
     date_extracted: str

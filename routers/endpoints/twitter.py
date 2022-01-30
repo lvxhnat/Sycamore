@@ -70,6 +70,7 @@ def scrape_and_write_twitter_followings_task(
 
     extraction_metadata = {
         "user": jwt_payload['user'],
+        "end_point": '/'.join(endpoint.split("_")),
         "date_extracted": datetime.now().strftime("%Y-%m-%d %H:%M"),
         "job_id": str(uuid.uuid4()),
         "write_type": params.write_type,
@@ -128,6 +129,7 @@ def scrape_and_write_twitter_followers_task(
     extraction_metadata = {
         "user": jwt_payload['user'],
         "job_id": str(uuid.uuid4()),
+        "end_point": '/'.join(endpoint.split("_")),
         "write_type": params.write_type,
         "job_description": {
             "users_requested": users_requested,

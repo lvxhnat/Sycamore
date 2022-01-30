@@ -31,6 +31,7 @@ class DefaultTwitterResponseBaseModel(DefaultBaseModel):
         schema_extra = {
             "example": {
                 "user": "james201",
+                "end_point": "twitter/followers/",
                 "date_extracted": datetime.now().strftime("%Y-%m-%d %H:%M"),
                 "job_id": '12c6f2a1-8022-4965-b5fe-e210b7e4deba',
                 "write_type": 'localstorage',

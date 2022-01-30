@@ -59,6 +59,7 @@ def scrape_and_write_weekly_ethanol_production(
         time_elapsed = round(time.time() - start_time)
         extraction_metadata = {
             "user": jwt_payload['user'],
+            "end_point": '/'.join(endpoint.split("_")),
             "date_extracted": datetime.now().strftime("%Y-%m-%d %H:%M"),
             "job_id": str(uuid.uuid4()),
             "write_type": write_type,
@@ -107,6 +108,7 @@ def scrape_and_write_weekly_ethanol_ending_stocks(
         time_elapsed = round(time.time() - start_time)
         extraction_metadata = {
             "user": jwt_payload['user'],
+            "end_point": '/'.join(endpoint.split("_")),
             "date_extracted": datetime.now().strftime("%Y-%m-%d %H:%M"),
             "job_id": str(uuid.uuid4()),
             "write_type": write_type,
@@ -155,6 +157,7 @@ def scrape_and_write_usda_crop_production_reports(
         time_elapsed = round(time.time() - start_time)
         extraction_metadata = {
             "user": jwt_payload['user'],
+            "end_point": '/'.join(endpoint.split("_")),
             "date_extracted": datetime.now().strftime("%Y-%m-%d %H:%M"),
             "job_id": str(uuid.uuid4()),
             "write_type": write_type,
