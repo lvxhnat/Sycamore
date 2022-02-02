@@ -7,7 +7,7 @@ from alerts.logger import logger
 load_dotenv()
 sys.path.append("...")
 
-logger.info("Database initialised")
+logger.info("Database singleton instantiated")
 main_client = MongoClient('mongodb+srv://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] +
                           '@' + os.environ['MONGODB_CLUSTERNAME'] + '.nsb6k.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
 visser_database = main_client['Visser']
