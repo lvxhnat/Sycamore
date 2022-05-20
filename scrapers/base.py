@@ -1,6 +1,6 @@
 import os
-import dotenv
-dotenv.load_dotenv()
+from dotenv import load_dotenv
+load_dotenv()
 
 
 class BaseClient:
@@ -11,6 +11,6 @@ class BaseClient:
         self.NEWSAPI_APIKEYS = [
             os.environ["NEWS_APIKEY_" + str(i)] for i in range(self.NEWSAPI_APIKEYS_COUNT)
         ]
-        self.FINHUB_APIKEY = os.environ["FINHUB_APIKEY"]
+        self.FINHUB_APIKEY = os.environ["FINNHUB_API_KEY"]
         self.COINAPI_APIKEY = os.environ["COIN_API_KEY"]
-        self.USDA_FAS_APIKEY = os.environ["USDA_FAS_APIKEY"]
+        self.USDA_FAS_APIKEY = os.environ["USDA_FAS_API_KEY"]

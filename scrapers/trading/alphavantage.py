@@ -1,10 +1,14 @@
 import os
 import csv
 import requests
+import numpy as np
 import pandas as pd
+
 from itertools import cycle
 from dotenv import load_dotenv
-from utils.exceptions import RateLimitException
+from datetime import datetime
+
+from utils.exceptions.api_exception import RateLimitException
 env_loaded = load_dotenv()
 
 
@@ -20,19 +24,15 @@ class AlphaVantageClient:
             self,
             ticker: str,
             resolution: str = "5min",
-            date_range: str = "year1month1",
+            from_date: str = "2022-02-20",
             retries: int = 3) -> pd.DataFrame:
-        """ Retrieve historical data from alpha vantage. 
+        """ Retrieve historical data from alpha vantage up to the last two years.
 
         ## Parameters
         ======================
         ticker      : Ticker symbol.
         resolution  : Data interval 1min, 5min, 15min, 30min, 60min
-        date_range  : Two years of minute-level intraday data contains over 2 million data points, which can take up to Gigabytes of memory. 
-                    To ensure optimal API response speed, the trailing 2 years of intraday data is evenly divided into 24 "slices" 
-                    year1month1, year1month2, year1month3, ..., year1month11, year1month12, year2month1, year2month2, year2month3, ..., year2month11, year2month12. 
-                    Each slice is a 30-day window, with year1month1 being the most recent and year2month12 being the farthest from today. 
-                    By default, slice=year1month1.
+        date_range  : Date in %Y-%m-%d
 
         ## Sample Call 
         ======================
@@ -49,10 +49,23 @@ class AlphaVantageClient:
 
         """
 
+        def get_date_range(from_date: str):
+            days = max(13 * 28, (datetime.today() -
+                       datetime.strptime(from_date, "%Y-%m-%d")).days)
+            months = np.ceil(days / 28).astype(int)
+            return "year" + str(months//12) + "month" + str(months % 12)
+
+        resolution = resolution.strip(" ").lower()
+
         try:
+            date_range = get_date_range(from_date)
 
             base_endpoint = "https://www.alphavantage.co/query?"
-            endpoint = f"function=TIME_SERIES_INTRADAY_EXTENDED&symbol={ticker}&interval={resolution}&slice={date_range}&apikey={self.APIKEY}"
+            endpoint = f"function=TIME_SERIES_INTRADAY_EXTENDED\
+                            &symbol={ticker}\
+                            &interval={resolution}\
+                            &slice={date_range}\
+                            &apikey={self.APIKEY}"
 
             url = base_endpoint + endpoint
 

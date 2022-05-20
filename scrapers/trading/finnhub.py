@@ -1,13 +1,13 @@
-import time
 import requests
 import pandas as pd
 from datetime import datetime, timedelta
 
 from utils.alerts.logger import logger
 from scrapers.base import BaseClient
+from utils.cleaning.datetime_clean import date_to_unixtime
 
 
-class AssetScraperClient(BaseClient):
+class FinnhubClient(BaseClient):
 
     """ Finnhub API data forms the base of this client
     """
@@ -40,10 +40,10 @@ class AssetScraperClient(BaseClient):
                 f"Error occurred while retrieving symbols, please check request methods for finnhub api.")
             return None
 
-    def retrieve_historical_data(
+    def get_historical_data(
         self,
         ticker: str,
-        from_date: str,
+        from_date: str = "2022-02-20",
         resolution: int = 1,
         data_format: str = "json"
     ) -> pd.DataFrame:
@@ -62,8 +62,8 @@ class AssetScraperClient(BaseClient):
 
         to_date = datetime.strftime(
             datetime.now() + timedelta(days=1), "%Y-%m-%d")
-        fromdate, todate = self.date_to_unixtime(
-            from_date, "%Y-%m-%d"), self.date_to_unixtime(to_date, "%Y-%m-%d")
+        fromdate, todate = date_to_unixtime(
+            from_date, "%Y-%m-%d"), date_to_unixtime(to_date, "%Y-%m-%d")
 
         hist = requests.get(
             f"https://finnhub.io/api/v1/stock/candle?symbol={ticker}&resolution={resolution}&from={fromdate}&to={todate}&token={self.FINHUB_APIKEY}").text

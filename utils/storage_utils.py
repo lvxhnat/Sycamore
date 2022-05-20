@@ -16,7 +16,11 @@ class StorageUtility:
     def __init__(self):
         self.root_url = "resources/documents/"
 
-    def store_items(self, dataframe: pd.DataFrame, user: str, write_type: str, endpoint_storage: str):
+    def store_items(self,
+                    dataframe: pd.DataFrame,
+                    user: str,
+                    write_type: str,
+                    endpoint_storage: str):
 
         dataframe_length = dataframe.shape[0]
 

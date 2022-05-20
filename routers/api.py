@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends
+
+from routers.endpoints.social import twitter
+from routers.endpoints.economics import agriculture
+from routers.endpoints.trading import assets
+
 from utils.auth.verify_utils import hasaccess
 
-from routers.endpoints import (
-    twitter,
-    agriculture,
-)
 
 protected_endpoint = [Depends(hasaccess)]
 
@@ -18,5 +19,11 @@ api_router.include_router(
 api_router.include_router(
     agriculture.router,
     tags=["Agriculture"],
+    dependencies=protected_endpoint
+)
+
+api_router.include_router(
+    assets.router,
+    tags=["Asset"],
     dependencies=protected_endpoint
 )

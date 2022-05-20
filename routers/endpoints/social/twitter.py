@@ -7,7 +7,7 @@ import pandas as pd
 from datetime import datetime
 from dotenv import load_dotenv
 
-from models import twitter
+from models import social
 from utils.alerts.logger import logger
 from utils.storage_utils import StorageUtility
 from utils.cleaning.platform.twitter_clean import clean_twitter_follows
@@ -17,8 +17,6 @@ from models.decorators.mongodb import store_mongodb_metadata
 from fastapi import APIRouter, HTTPException, Header
 
 load_dotenv()
-sys.path.append("...")
-
 
 router = APIRouter(
     prefix="/twitter",
@@ -27,10 +25,10 @@ twitter_api_keys = 11  # Number of API Keys to deploy for twitter
 def check_user_length(s): return 0 if s is None else len(s)
 
 
-@router.post("/followings", response_model=twitter.FollowingsResponse)
+@router.post("/followings", response_model=social.FollowingsResponse)
 @store_mongodb_metadata
 def scrape_and_write_twitter_followings_task(
-        params: twitter.FollowingsParams,
+        params: social.FollowingsParams,
         token: str = Header(...),
 ):
     jwt_payload = jwt.decode(
@@ -83,10 +81,10 @@ def scrape_and_write_twitter_followings_task(
     return extraction_metadata
 
 
-@router.post("/followers", response_model=twitter.FollowersResponse)
+@router.post("/followers", response_model=social.FollowersResponse)
 @store_mongodb_metadata
 def scrape_and_write_twitter_followers_task(
-        params: twitter.FollowersParams,
+        params: social.FollowersParams,
         token: str = Header(...),
 ):
     jwt_payload = jwt.decode(
