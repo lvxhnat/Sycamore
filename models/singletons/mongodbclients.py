@@ -1,5 +1,5 @@
 import os
-import sys
+import certifi
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
@@ -10,7 +10,7 @@ load_dotenv()
 def main():
 
     main_client = MongoClient('mongodb+srv://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] +
-                              '@' + os.environ['MONGODB_CLUSTERNAME'] + '.nsb6k.mongodb.net/myFirstDatabase?retryWrites=true&w=majority')
+                              '@' + os.environ['MONGODB_CLUSTERNAME'] + '.nsb6k.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', tlsCAFile=certifi.where())
     visser_database = main_client['Visser']
     sycamore_database = main_client['Sycamore']
 

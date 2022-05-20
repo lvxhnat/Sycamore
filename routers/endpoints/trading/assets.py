@@ -20,7 +20,7 @@ from models.trading import HistoricalDataParams, HistoricalDataResponse
 load_dotenv()
 
 router = APIRouter(
-    prefix="/agriculture",
+    prefix="/trading",
 )
 
 

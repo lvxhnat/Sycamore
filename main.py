@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
 from utils.auth import auth_utils
+from utils.alerts.logger import logging
 from routers import api
 
 from starlette.requests import Request
@@ -15,13 +16,13 @@ from slowapi.errors import RateLimitExceeded
 
 limiter = Limiter(key_func=get_remote_address)
 description = """ 
-Sycamore is a data extraction application for data needs, allowing you to see the world in context 🌎 \n 
-Sycamore scrapes and cleans data via Scrapers (Scrapy, Requests) and API calls asynchronously. A choice is then given to either store data in Google Cloud (GCS), MongoDB or Locally (If you do decide to pull down the codebase and run locally). 
+Visser is a data extraction application for data needs, allowing you to see the world in context 🌎 \n 
+Visser scrapes and cleans data via Scrapers (Scrapy, Requests) and API calls asynchronously. A choice is then given to either store data in Google Cloud (GCS), MongoDB or Locally (If you do decide to pull down the codebase and run locally). 
 \n\n 
 Please contact me for an auth token if you wish to share the data available here!
 """
 app = FastAPI(
-    title="Sycamore",
+    title="Visser",
     description=description,
     version="0.0.1",
     contact={
@@ -54,6 +55,7 @@ def home_page():
 @app.post("/requestauthtoken", tags=["Authentication"],)
 @limiter.limit("5/minute")
 async def request_auth_token(request: Request):
+
     try:
         params = await request.form()
         _user = params['username']
@@ -65,7 +67,8 @@ async def request_auth_token(request: Request):
         else:
             raise HTTPException(
                 status_code=401, detail="Invalid Username or Password Supplied")
-    except:
+    except Exception as e:
+        logging.error(e)
         raise HTTPException(
             status_code=401, detail="Invalid Payload Headers Supplied. Make sure payload contains username and password fields")
 
