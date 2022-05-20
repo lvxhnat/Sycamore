@@ -11,7 +11,7 @@ from models import twitter
 from alerts.logger import logger
 from utils.storage_utils import StorageUtility
 from utils.cleaning_utils import CleaningUtility
-from scrapers.twitter import TwitterScraperClient
+from scrapers.social.twitter import TwitterScraperClient
 from decorators.endpointdec import store_mongodb_metadata
 
 from fastapi import APIRouter, HTTPException, Header
