@@ -8,11 +8,11 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 from models import twitter
-from alerts.logger import logger
+from utils.alerts.logger import logger
 from utils.storage_utils import StorageUtility
-from utils.cleaning_utils import CleaningUtility
+from utils.cleaning.platform.twitter_clean import clean_twitter_follows
 from scrapers.social.twitter import TwitterScraperClient
-from decorators.endpointdec import store_mongodb_metadata
+from models.decorators.mongodb import store_mongodb_metadata
 
 from fastapi import APIRouter, HTTPException, Header
 
@@ -51,9 +51,7 @@ def scrape_and_write_twitter_followings_task(
     twitter_followings_data = pd.concat(twitter_api_client.iter_processed_followings(
         screen_names=params.screen_names, user_ids=params.user_ids))
 
-    cleaning_util = CleaningUtility()
-
-    twitter_followings_data = cleaning_util.clean_twitter_follows(
+    twitter_followings_data = clean_twitter_follows(
         twitter_followings_data)
     users_extracted = twitter_followings_data.twitter_follower_id.nunique()
     users_requested = check_user_length(
@@ -109,9 +107,7 @@ def scrape_and_write_twitter_followers_task(
     twitter_followers_data = pd.concat(twitter_api_client.iter_processed_followers(
         screen_names=params.screen_names, user_ids=params.user_ids))
 
-    cleaning_util = CleaningUtility()
-
-    twitter_followers_data = cleaning_util.clean_twitter_follows(
+    twitter_followers_data = clean_twitter_follows(
         twitter_followers_data)
     users_extracted = twitter_followers_data.twitter_follower_id.nunique()
     users_requested = check_user_length(

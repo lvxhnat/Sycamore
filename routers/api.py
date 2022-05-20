@@ -3,7 +3,6 @@ from utils.auth.verify_utils import hasaccess
 
 from routers.endpoints import (
     twitter,
-    assets,
     agriculture,
 )
 
@@ -15,11 +14,7 @@ api_router.include_router(
     tags=["Twitter"],
     dependencies=protected_endpoint
 )
-api_router.include_router(
-    assets.router,
-    tags=["Asset"],
-    dependencies=protected_endpoint
-)
+
 api_router.include_router(
     agriculture.router,
     tags=["Agriculture"],

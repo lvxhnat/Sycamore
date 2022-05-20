@@ -1,28 +1,18 @@
+from datetime import datetime, timedelta
+from bs4 import BeautifulSoup
+import dateutil.parser
+import pandas as pd
+import requests
+import re
+import warnings
+from utils.cleaning.datetime_clean import textualtime_to_timestring
+from scrapers.base import BaseClient
+from utils.alerts.logger import logger
 import os
 import sys
 import dotenv
 
-sys.path.append("...")
-
-from alerts.logger import logger
-from scrapers.base import BaseClient
-from utils.cleaning_utils import textualtime_to_timestring
-
-import warnings
-import re
-import requests
-import pandas as pd
-import dateutil.parser
-from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
-
-import warnings
-warnings.filterwarnings("ignore")
-
-
 dotenv.load_dotenv()
-
-
 warnings.filterwarnings("ignore")
 
 

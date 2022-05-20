@@ -2,7 +2,7 @@ import re
 import requests
 import pandas as pd
 
-from alerts.logger import logger
+from utils.alerts.logger import logger
 from scrapers.base import BaseClient
 
 

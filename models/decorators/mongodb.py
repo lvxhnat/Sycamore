@@ -1,4 +1,4 @@
-from databases.mongodbclients import usertransaction_collection
+from models.singletons.mongodbclients import usertransaction_collection
 from functools import wraps
 import sys
 

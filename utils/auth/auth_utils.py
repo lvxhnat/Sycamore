@@ -5,7 +5,7 @@ import bcrypt
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
-from databases.mongodbclients import user_collection
+from models.singletons.mongodbclients import user_collection
 
 sys.path.append("...")
 

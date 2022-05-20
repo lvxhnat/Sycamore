@@ -1,3 +1,6 @@
+from scrapers.base import BaseClient
+from utils.alerts.logger import logger
+from utils.alerts.typeprompts import NASSCropProductionInfo
 import re
 import sys
 import requests
@@ -7,10 +10,6 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 sys.path.append("...")
-
-from alerts.typeprompts import NASSCropProductionInfo
-from alerts.logger import logger
-from scrapers.base import BaseClient
 
 
 class USDAScraperClient(BaseClient):

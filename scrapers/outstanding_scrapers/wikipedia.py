@@ -1,3 +1,6 @@
+from utils.alerts.logger import logger
+from utils.alerts.runtime import logruntime
+from utils.alerts.exceptions import WikipediaExcessiveRequests, WikipediaInvalidPathParameters
 import sys
 import time
 import aiohttp
@@ -7,10 +10,6 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 sys.path.append("...")
-
-from alerts.exceptions import WikipediaExcessiveRequests, WikipediaInvalidPathParameters
-from alerts.runtime import logruntime
-from alerts.logger import logger
 
 
 class WikipediaScraperClient:

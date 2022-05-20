@@ -1,3 +1,5 @@
+from scrapers.base import BaseClient
+from utils.alerts.logger import logger
 import re
 import sys
 import requests
@@ -6,9 +8,6 @@ import pandas as pd
 from datetime import datetime
 
 sys.path.append("...")
-
-from alerts.logger import logger
-from scrapers.base import BaseClient
 
 
 class WeatherGovScraperClient(BaseClient):

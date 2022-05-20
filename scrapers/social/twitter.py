@@ -1,4 +1,4 @@
-from alerts.logger import logger
+from utils.alerts.logger import logger
 from more_itertools import chunked
 from dotenv import load_dotenv
 import os

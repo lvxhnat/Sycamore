@@ -1,13 +1,12 @@
-from scrapers.eia import EIAScraperClient
-from scrapers.usda import USDAScraperClient
+from scrapers.economics.agriculture.eia import EIAScraperClient
+from scrapers.economics.agriculture.usda import USDAScraperClient
 from utils.storage_utils import StorageUtility
 from fastapi import APIRouter, HTTPException, Header
 from models.agriculture import AgriculturalResponse
-from decorators.endpointdec import store_mongodb_metadata
+from models.decorators.mongodb import store_mongodb_metadata
 
 import os
 import jwt
-import sys
 import uuid
 import time
 from datetime import datetime
@@ -16,9 +15,6 @@ from typing import Optional
 
 from models.writetype import storage_type
 load_dotenv()
-
-sys.path.append("...")
-
 
 router = APIRouter(
     prefix="/agriculture",
