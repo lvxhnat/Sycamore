@@ -13,7 +13,6 @@ from utils.alerts.logger import logging
 from fastapi import APIRouter, HTTPException, Header
 
 from models.trading import AssetHistoricalData, HistoricalDataParams, HistoricalDataWriteResponse
-from models.decorators import log_metadata
 
 load_dotenv()
 
@@ -24,7 +23,6 @@ router = APIRouter(
 trading_client = TradingDataClient()
 
 
-# @store_mongodb_metadata
 @router.post("/historical", response_model=Union[HistoricalDataWriteResponse, List[AssetHistoricalData]])
 def get_historical_data(params: HistoricalDataParams,
                         token: str = Header(...),):

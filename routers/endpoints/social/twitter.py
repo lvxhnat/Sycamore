@@ -10,7 +10,6 @@ from utils.alerts.metadata_logger import log_metadata
 from utils.storage_utils import StorageUtility
 from utils.cleaning.platform.twitter_clean import clean_twitter_follows
 from scrapers.social.twitter import TwitterScraperClient
-from models.decorators.mongodb import store_mongodb_metadata
 
 from fastapi import APIRouter, HTTPException, Header
 
@@ -24,7 +23,6 @@ def check_user_length(s): return 0 if s is None else len(s)
 
 
 @router.post("/followings", response_model=social.FollowingsResponse)
-@store_mongodb_metadata
 def scrape_and_write_twitter_followings_task(
         params: social.FollowingsParams,
         token: str = Header(...),
@@ -70,7 +68,6 @@ def scrape_and_write_twitter_followings_task(
 
 
 @router.post("/followers", response_model=social.FollowersResponse)
-@store_mongodb_metadata
 def scrape_and_write_twitter_followers_task(
         params: social.FollowersParams,
         token: str = Header(...),
