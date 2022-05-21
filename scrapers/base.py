@@ -11,6 +11,6 @@ class BaseClient:
         self.NEWSAPI_APIKEYS = [
             os.environ["NEWS_APIKEY_" + str(i)] for i in range(self.NEWSAPI_APIKEYS_COUNT)
         ]
-        self.FINHUB_APIKEY = os.environ["FINNHUB_API_KEY"]
-        self.COINAPI_APIKEY = os.environ["COIN_API_KEY"]
+        self.FINNHUB_API_KEY = os.environ["FINNHUB_API_KEY"]
+        self.COINAPI_API_KEY = os.environ["COIN_API_KEY"]
         self.USDA_FAS_APIKEY = os.environ["USDA_FAS_API_KEY"]

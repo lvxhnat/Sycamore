@@ -4,16 +4,16 @@ import uuid
 import time
 from datetime import datetime
 from dotenv import load_dotenv
-from typing import Optional
+from typing import Union, List
 
 from scrapers.trading.main import TradingDataClient
 from utils.storage_utils import StorageUtility
+from utils.alerts.logger import logging
 
 from fastapi import APIRouter, HTTPException, Header
 
-from utils.auth.auth_utils import verify_credentials
 from models.decorators.mongodb import store_mongodb_metadata
-from models.trading import HistoricalDataParams, HistoricalDataResponse
+from models.trading import AssetHistoricalData, HistoricalDataParams, HistoricalDataWriteResponse
 
 
 load_dotenv()
@@ -26,38 +26,45 @@ trading_client = TradingDataClient()
 
 
 # @store_mongodb_metadata
-@router.post("/historical", response_model=HistoricalDataResponse)
+@router.post("/historical", response_model=Union[HistoricalDataWriteResponse, List[AssetHistoricalData]])
 def get_historical_data(params: HistoricalDataParams,
                         token: str = Header(...),):
     """
     Example
     ==========
     >>> requests.post(f"http://localhost:8080/api/trading/historical", 
-              data = json.dumps({
-                  "ticker": "AAPL",
-                  "from_date": "2022-01-01",
-                  "to_date": "2022-02-02",
-                  "resolution": "1D",
-                  "instrument": "Stock",
-              }),
-             headers = { "token": api_token }).json()
+            data = json.dumps({
+                "ticker": "AAPL",
+                "from_date": "2022-01-01",
+                "to_date": "2022-02-02",
+                "resolution": "15MIN",
+                "instrument": "Stock",
+                "write_type": "return"
+            }),
+            headers = {
+                "token": api_token
+            }).json()
     """
+    def get_formatted_historical_data(x):
+        return trading_client.get_historical_data(
+            ticker=params.ticker,
+            from_date=params.from_date,
+            to_date=params.to_date,
+            resolution=params.resolution,
+            data_format=x)
+
     try:
         jwt_payload = jwt.decode(
             token, os.environ['MASTER_SECRET_KEY'], algorithms=["HS256"])
-        start_time = time.time()
-        historical_data = trading_client.get_historical_data(
-            params.ticker,
-            params.from_date,
-            params.to_date,
-            params.resolution,
-            params.instruments)
 
         if params.write_type == "return":
-            serialized = historical_data.T.to_json()
-            return serialized
+            historical_data = get_formatted_historical_data("json")
+            return historical_data
 
         else:
+            start_time = time.time()
+            historical_data = get_formatted_historical_data("csv")
+
             endpoint = f"historicaldata/{params.ticker}"
             storage_util = StorageUtility()
             storage_url = storage_util.store_items(
@@ -87,4 +94,5 @@ def get_historical_data(params: HistoricalDataParams,
             return extraction_metadata
 
     except Exception as e:
+        logging.error(e)
         return HTTPException(400, detail=e)

@@ -8,6 +8,17 @@ from models.writetype import storage_type
 load_dotenv()
 
 
+class AssetHistoricalData(BaseModel):
+    # Data Returned directly from the scrapers
+    close: float
+    high: float
+    open: float
+    low: float
+    date: int
+    volume: int
+    symbol: str
+
+
 class DefaultTradingParamsBaseModel(BaseModel):
     ticker: str = Field(None, description="The ticker symbol given.")
     from_date: str = Field(
@@ -50,5 +61,5 @@ class HistoricalDataParams(DefaultTradingParamsBaseModel):
     pass
 
 
-class HistoricalDataResponse(DefaultTradingResponseBaseModel):
+class HistoricalDataWriteResponse(DefaultTradingResponseBaseModel):
     pass

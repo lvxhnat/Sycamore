@@ -1,10 +1,12 @@
 import requests
 import pandas as pd
+from typing import Union, List
 from datetime import datetime, timedelta
 
-from utils.alerts.logger import logger
 from scrapers.base import BaseClient
+from utils.alerts.logger import logging
 from utils.cleaning.datetime_clean import date_to_unixtime
+from models.trading import AssetHistoricalData
 
 
 class FinnhubClient(BaseClient):
@@ -30,13 +32,15 @@ class FinnhubClient(BaseClient):
             supportForex = pd.DataFrame(eval(forexSymbols))
 
             supportForex['type'] = "Forex"
-            supportStocks = supportStocks.rename(
-                columns={"currency": "Currency", "figi": "FIGI", "mic": "MIC"})
+            supportStocks = supportStocks.rename(columns={
+                "currency": "Currency",
+                "figi": "FIGI",
+                "mic": "MIC"})
             symbols = pd.concat([supportStocks, supportForex])
 
             return symbols
         except:
-            logger.error(
+            logging.error(
                 f"Error occurred while retrieving symbols, please check request methods for finnhub api.")
             return None
 
@@ -44,9 +48,9 @@ class FinnhubClient(BaseClient):
         self,
         ticker: str,
         from_date: str = "2022-02-20",
-        resolution: int = 1,
+        resolution: int = "D",
         data_format: str = "json"
-    ) -> pd.DataFrame:
+    ) -> Union[pd.DataFrame, List[AssetHistoricalData]]:
         """
         Parameters
         =============
@@ -58,24 +62,47 @@ class FinnhubClient(BaseClient):
         Rate Limits
         =============
         60 API calls/minute
+
+        Example Usage
+        =============
+        >>> trading_client.get_historical_data( ticker="AAPL", from_date="2022-01-01", data_format = "json")
+        >>> [{"close": 23.2, "high": 24.4, "low": 21.3, "open": 23.4, "date": 1642321312, "volume": 23013}, {...}, ...]
+
+        >>> trading_client.get_historical_data( ticker="AAPL", from_date="2022-01-01", data_format = "csv")
+        >>>      close      high     low     open                 date     volume symbol
+            0   177.57  179.2300  177.26  178.085  2021-12-31 00:00:00   64062261   AAPL
+            1   182.01  182.8800  177.71  177.830  2022-01-03 00:00:00  104701220   AAPL
+            2   179.70  182.9400  179.12  182.630  2022-01-04 00:00:00   99310438   AAPL
+            3   174.92  180.1700  174.64  179.610  2022-01-05 00:00:00   94537602   AAPL
         """
 
         to_date = datetime.strftime(
             datetime.now() + timedelta(days=1), "%Y-%m-%d")
         fromdate, todate = date_to_unixtime(
             from_date, "%Y-%m-%d"), date_to_unixtime(to_date, "%Y-%m-%d")
+        resolution = resolution.strip("1")
 
         hist = requests.get(
-            f"https://finnhub.io/api/v1/stock/candle?symbol={ticker}&resolution={resolution}&from={fromdate}&to={todate}&token={self.FINHUB_APIKEY}").text
+            f"https://finnhub.io/api/v1/stock/candle?symbol={ticker}&resolution={resolution}&from={fromdate}&to={todate}&token={self.FINNHUB_API_KEY}").text
+
+        historical = pd.DataFrame(eval(hist))\
+            .rename(columns={"c": "close", "h": "high", "l": "low", "o": "open", "s": "status", "t": "date", "v": "volume"})\
+            .drop(columns=['status'])
+        historical['symbol'] = ticker
+
         if data_format == "json":
-            return hist
+            return eval(historical.to_json(orient="table", index=False))['data']
 
         elif data_format == "csv":
-            historical = pd.DataFrame(eval(hist))
-            historical.columns = ['close', 'high', 'low',
-                                  'open', 'status', 'date', 'volume']
             historical.date = historical.date.apply(
                 lambda ts: datetime.utcfromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S'))
-
-            historical['symbol'] = ticker
             return historical
+
+
+if __name__ == '__main__':
+    logging.info("Retrieving Finnhub Test data")
+    trading_client = FinnhubClient()
+    data = trading_client.get_historical_data(
+        ticker="AAPL",
+        from_date="2022-01-01")
+    print("Completed: " + str(data))
