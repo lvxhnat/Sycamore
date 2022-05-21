@@ -1,17 +1,17 @@
+import os
+import jwt
+import time
+from dotenv import load_dotenv
+from typing import Optional
+
+from fastapi import APIRouter, HTTPException, Header
+
+from models.agriculture import AgriculturalResponse
+from utils.alerts.metadata_logger import log_metadata
 from scrapers.economics.agriculture.eia import EIAScraperClient
 from scrapers.economics.agriculture.usda import USDAScraperClient
 from utils.storage_utils import StorageUtility
-from fastapi import APIRouter, HTTPException, Header
-from models.agriculture import AgriculturalResponse
-from models.decorators.mongodb import store_mongodb_metadata
 
-import os
-import jwt
-import uuid
-import time
-from datetime import datetime
-from dotenv import load_dotenv
-from typing import Optional
 
 from models.writetype import storage_type
 load_dotenv()
@@ -22,7 +22,6 @@ router = APIRouter(
 
 
 @router.get("/ethanolprod", response_model=AgriculturalResponse)
-@store_mongodb_metadata
 def scrape_and_write_weekly_ethanol_production(
         write_type: Optional[storage_type] = "cloudstorage",
         token: str = Header(...),
@@ -52,26 +51,19 @@ def scrape_and_write_weekly_ethanol_production(
         storage_url = os.path.dirname(os.path.realpath(
             '__file__')) + "/" + storage_url.replace("..", "")
 
-        time_elapsed = round(time.time() - start_time)
-        extraction_metadata = {
-            "user": jwt_payload['user'],
-            "end_point": '/'.join(endpoint.split("_")),
-            "date_extracted": datetime.now().strftime("%Y-%m-%d %H:%M"),
-            "job_id": str(uuid.uuid4()),
-            "write_type": write_type,
-            "job_description": {},
-            "time_elapsed_seconds": time_elapsed,
-            "write_path": storage_url,
-        }
-
-        return extraction_metadata
+        return log_metadata(user=jwt_payload['user'],
+                            endpoint='/'.join(endpoint.split("_")),
+                            write_type=write_type,
+                            job_description={},
+                            time_elapsed_seconds=round(
+                                time.time() - start_time),
+                            write_path=storage_url)
 
     except Exception as e:
         return HTTPException(400, detail=e)
 
 
 @router.get("/ethanolstock", response_model=AgriculturalResponse)
-@store_mongodb_metadata
 def scrape_and_write_weekly_ethanol_ending_stocks(
     write_type: Optional[storage_type] = "cloudstorage",
     token: str = Header(...),
@@ -101,26 +93,19 @@ def scrape_and_write_weekly_ethanol_ending_stocks(
         storage_url = os.path.dirname(os.path.realpath(
             '__file__')) + "/" + storage_url.replace("..", "")
 
-        time_elapsed = round(time.time() - start_time)
-        extraction_metadata = {
-            "user": jwt_payload['user'],
-            "end_point": '/'.join(endpoint.split("_")),
-            "date_extracted": datetime.now().strftime("%Y-%m-%d %H:%M"),
-            "job_id": str(uuid.uuid4()),
-            "write_type": write_type,
-            "job_description": {},
-            "time_elapsed_seconds": time_elapsed,
-            "write_path": storage_url,
-        }
-
-        return extraction_metadata
+        return log_metadata(user=jwt_payload['user'],
+                            endpoint='/'.join(endpoint.split("_")),
+                            write_type=write_type,
+                            job_description={},
+                            time_elapsed_seconds=round(
+                                time.time() - start_time),
+                            write_path=storage_url)
 
     except Exception as e:
         return HTTPException(400, detail=e)
 
 
 @router.get("/cropreports", response_model=AgriculturalResponse)
-@store_mongodb_metadata
 def scrape_and_write_usda_crop_production_reports(
     write_type: Optional[storage_type] = "cloudstorage",
     token: str = Header(...),
@@ -150,19 +135,13 @@ def scrape_and_write_usda_crop_production_reports(
         storage_url = os.path.dirname(os.path.realpath(
             '__file__')) + "/" + storage_url.replace("..", "")
 
-        time_elapsed = round(time.time() - start_time)
-        extraction_metadata = {
-            "user": jwt_payload['user'],
-            "end_point": '/'.join(endpoint.split("_")),
-            "date_extracted": datetime.now().strftime("%Y-%m-%d %H:%M"),
-            "job_id": str(uuid.uuid4()),
-            "write_type": write_type,
-            "job_description": {},
-            "time_elapsed_seconds": time_elapsed,
-            "write_path": storage_url,
-        }
-
-        return extraction_metadata
+        return log_metadata(user=jwt_payload['user'],
+                            endpoint='/'.join(endpoint.split("_")),
+                            write_type=write_type,
+                            job_description={},
+                            time_elapsed_seconds=round(
+                                time.time() - start_time),
+                            write_path=storage_url)
 
     except Exception as e:
         return HTTPException(400, detail=e)
