@@ -57,8 +57,8 @@ class GoogleSheetUtility:
             ).execute()
 
             return response
-        except Exception as e:
-            print(e)
+        except:
+            return
 
     def read_df_from_gsheets(
             self,

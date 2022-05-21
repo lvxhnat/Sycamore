@@ -52,25 +52,38 @@ def home_page():
     return response
 
 
-@app.post("/requestauthtoken", tags=["Authentication"],)
+@app.post("/token", tags=["Authentication"],)
 @limiter.limit("5/minute")
 async def request_auth_token(request: Request):
-
+    """
+    Example
+    ==========
+    requests.post("http://localhost:8080/requestauthtoken", data = {
+        "username": "username", 
+        "password": "password"
+    })
+    """
     try:
         params = await request.form()
         _user = params['username']
         _pass = params['password']
         authenticated = auth_utils.verify_credentials(_user, _pass)
+
         if authenticated:
             access_token = auth_utils.generate_token(_user)
-            return {"access_token": access_token}
+            return {"access_token": access_token, "token_type": "bearere"}
+
         else:
             raise HTTPException(
-                status_code=401, detail="Invalid Username or Password Supplied")
-    except Exception as e:
-        logging.error(e)
+                status_code=401,
+                detail="Incorrect username or password",
+                headers={"WWW-Authenticate": "Bearer"})
+
+    except:
         raise HTTPException(
-            status_code=401, detail="Invalid Payload Headers Supplied. Make sure payload contains username and password fields")
+            status_code=404,
+            detail="Invalid Payload Headers Supplied. Make sure payload contains username and password fields",
+            headers={"WWW-Authenticate": "Bearer"})
 
 app.include_router(api.api_router, prefix="/api")
 

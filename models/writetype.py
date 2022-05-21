@@ -5,12 +5,14 @@ load_dotenv()
 
 
 class DevStorageWriteType(str, Enum):
+    returnitem = "return"
     localstorage = "localstorage"
     cloudstorage = "cloudstorage"
     databasestorage = "databasestorage"
 
 
 class ProdStorageWriteType(str, Enum):
+    returnitem = "return"
     cloudstorage = "cloudstorage"
     databasestorage = "databasestorage"
 

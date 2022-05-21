@@ -1,16 +1,19 @@
 import os
 import jwt
-import sys
+from jwt import InvalidTokenError
 import bcrypt
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
+from fastapi import Header
+from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends
+
 from models.singletons.mongodbclients import user_collection
-
-sys.path.append("...")
-
+from utils.exceptions.api_exception import credentials_exception
 
 load_dotenv()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 def generate_token(username: str):
@@ -23,13 +26,19 @@ def generate_token(username: str):
     return access_token
 
 
-def verify_token(jwt_token: str):
+def verify_token(jwt_token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(
-            jwt_token, os.environ['MASTER_SECRET_KEY'], algorithms=["HS256"])
-        return payload
-    except:
-        return None
+            jwt_token,
+            os.environ['MASTER_SECRET_KEY'],
+            algorithms=["HS256"])
+        user = payload['user']
+        if user is None:
+            raise credentials_exception()
+        else:
+            return user
+    except InvalidTokenError:
+        raise credentials_exception()
 
 
 def verify_credentials(username: str, password: str):
@@ -41,3 +50,13 @@ def verify_credentials(username: str, password: str):
         return auth
     except:
         return False
+
+
+async def hasaccess(token: str = Header(...)):
+    """ Function that is used to validate the token in the case that it requires it
+    """
+    try:
+        jwt.decode(
+            token, key=os.environ['MASTER_SECRET_KEY'], algorithms=["HS256"])
+    except:
+        raise credentials_exception()

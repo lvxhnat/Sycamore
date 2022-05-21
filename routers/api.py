@@ -4,7 +4,7 @@ from routers.endpoints.social import twitter
 from routers.endpoints.economics import agriculture
 from routers.endpoints.trading import assets
 
-from utils.auth.verify_utils import hasaccess
+from utils.auth.auth_utils import hasaccess
 
 
 protected_endpoint = [Depends(hasaccess)]

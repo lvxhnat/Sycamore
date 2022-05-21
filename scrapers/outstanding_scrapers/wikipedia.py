@@ -1,11 +1,10 @@
 from utils.alerts.logger import logger
 from utils.alerts.runtime import logruntime
-from utils.alerts.exceptions import WikipediaExcessiveRequests, WikipediaInvalidPathParameters
+from utils.exceptions.wiki_exception import WikipediaExcessiveRequests, WikipediaInvalidPathParameters
 import sys
 import time
 import aiohttp
 import asyncio
-import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 

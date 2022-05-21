@@ -1,6 +1,5 @@
 import os
 import jwt
-import sys
 import uuid
 import time
 import pandas as pd
@@ -8,7 +7,6 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 from models import social
-from utils.alerts.logger import logger
 from utils.storage_utils import StorageUtility
 from utils.cleaning.platform.twitter_clean import clean_twitter_follows
 from scrapers.social.twitter import TwitterScraperClient

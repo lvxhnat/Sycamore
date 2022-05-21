@@ -19,7 +19,7 @@ class DefaultTradingParamsBaseModel(BaseModel):
     instruments: str = Field(
         None, description="The financial instrument. Stock, Cryptocurrency, Futures, Options."
     )
-    write_type: Optional[storage_type] = "mongodb"
+    write_type: Optional[storage_type] = "return"
 
     class Config:
         schema_extra = {
