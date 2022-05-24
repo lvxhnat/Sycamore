@@ -29,7 +29,6 @@ def get_historical_data(params: HistoricalDataParams,
     ### Parameters 
     -------------
     **ticker**     : The ticker symbol <br/>
-
     **from_date**  : %Y-%m-%d <br/>
     **to_date**    : %Y-%m-%d <br/>
     **resolution** : Supported resolutions are - <br/>
