@@ -1,14 +1,13 @@
 import os
 import jwt
-import uuid
 import time
-from datetime import datetime
 from dotenv import load_dotenv
 from typing import Union, List
 
 from scrapers.trading.main import TradingDataClient
 from utils.storage_utils import StorageUtility
 from utils.alerts.logger import logging
+from utils.alerts.metadata_logger import log_metadata
 
 from fastapi import APIRouter, HTTPException, Header
 
@@ -27,8 +26,22 @@ trading_client = TradingDataClient()
 def get_historical_data(params: HistoricalDataParams,
                         token: str = Header(...),):
     """
-    Example
-    ==========
+    ### Parameters 
+    -------------
+    **ticker**     : The ticker symbol <br/>
+
+    **from_date**  : %Y-%m-%d <br/>
+    **to_date**    : %Y-%m-%d <br/>
+    **resolution** : Supported resolutions are - <br/>
+            &emsp;&emsp; MINUTE: 1MIN, 5MIN, 15MIN, 30MIN, <br/>
+            &emsp;&emsp; HOUR: 1H <br/>
+            &emsp;&emsp; DAY: 1D, 5D, 15D, 30D, 60D <br/>
+            &emsp;&emsp; WEEK: 1W, 5W, 15W, 30W, 60W <br/>
+            &emsp;&emsp; MONTH: 1M, 5M, 15M, 30M, 60M <br/>
+
+    ### Example Python Request
+    -------------
+    ```python
     >>> requests.post(f"http://localhost:8080/api/trading/historical", 
             data = json.dumps({
                 "ticker": "AAPL",
@@ -41,6 +54,7 @@ def get_historical_data(params: HistoricalDataParams,
             headers = {
                 "token": api_token
             }).json()
+    ```
     """
     def get_formatted_historical_data(x): return trading_client.get_historical_data(
         ticker=params.ticker, from_date=params.from_date, to_date=params.to_date, resolution=params.resolution, data_format=x)
