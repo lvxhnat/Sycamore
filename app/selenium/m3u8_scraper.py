@@ -20,7 +20,7 @@ def condition_to_retrieve(x):
         return False
 
 
-def retrieve_m3u8_url():
+def retrieve_m3u8_url() -> str:
 
     URL = "https://watchnewslive.tv/watch-cnbc-live-stream-free-24-7/"
     IFRAME_XPATH = "/html/body/div[1]/div[1]/div/div[1]/div/article/div/div[3]/div[1]/iframe"
@@ -29,7 +29,7 @@ def retrieve_m3u8_url():
     caps['goog:loggingPrefs'] = {'performance': 'ALL'}
     options = webdriver.ChromeOptions()
     options.add_argument('user-agent = ' + os.environ['USER_AGENT'])
-    driver = webdriver.Chrome(
+    driver = webdriver.Remote(
         command_executor=os.environ["SELENIUM_HUB_ADDRESS"],
         options=options,
         desired_capabilities=caps
@@ -46,6 +46,6 @@ def retrieve_m3u8_url():
 
     events = [process_browser_log_entry(entry) for entry in browser_log]
     events = [event['params']['response']['url']
-              for event in events if condition_to_retrieve(event)]
+              for event in events if condition_to_retrieve(event)][0]
 
     return events

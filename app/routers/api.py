@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.routers.endpoints.social import twitter
+from app.routers.endpoints.social import twitter, streams
 from app.routers.endpoints.economics import agriculture
 from app.routers.endpoints.trading import assets
 
@@ -25,5 +25,11 @@ api_router.include_router(
 api_router.include_router(
     assets.router,
     tags=["Asset"],
+    dependencies=protected_endpoint
+)
+
+api_router.include_router(
+    streams.router,
+    tags=["Streams"],
     dependencies=protected_endpoint
 )
