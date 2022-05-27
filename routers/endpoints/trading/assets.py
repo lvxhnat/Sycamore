@@ -29,8 +29,8 @@ def get_historical_data(params: HistoricalDataParams,
     ### Parameters 
     -------------
     **ticker**     : The ticker symbol <br/>
-    **from_date**  : %Y-%m-%d <br/>
-    **to_date**    : %Y-%m-%d <br/>
+    **from_date**  : Start date we want to get our data from, in format %Y-%m-%d <br/>
+    **to_date**    : End date we want to get our data from, in format %Y-%m-%d <br/>
     **resolution** : Supported resolutions are - <br/>
             &emsp;&emsp; MINUTE: 1MIN, 5MIN, 15MIN, 30MIN, <br/>
             &emsp;&emsp; HOUR: 1H <br/>
