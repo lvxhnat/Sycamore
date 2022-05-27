@@ -1,20 +1,22 @@
 version: "3.3"
 services:
-  property-scraper-1:
+  visser:
     build: .
+    env_file:
+      - ./config/.env.dev
     environment:
       - SELENIUM_HUB_ADDRESS=${SELENIUM_HUB_ADDRESS}
       - USER_AGENT=${USER_AGENT}
     ports:
-      - 8000:8000
+      - 8080:8080
     entrypoint:
       [
         "uvicorn",
-        "main:app",
+        "app.main:app",
         "--host",
         "0.0.0.0",
         "--port",
-        "8000"
+        "8080"
       ]
 
   selenium-hub:

@@ -71,6 +71,7 @@ googleapis-common-protos
 greenlet
 grpcio
 grpcio-status
+gunicorn
 httplib2
 idna
 idna-ssl

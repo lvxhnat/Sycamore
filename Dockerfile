@@ -13,4 +13,4 @@ WORKDIR .
 
 COPY ./app /app
 
-CMD ["uvicorn", "app.main:app", "--port", "8080"]
+CMD ["gunicorn", "app.main:app", "-k", "uvicorn.workers.UvicornWorker", "-b 0.0.0.0:80"]
