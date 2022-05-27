@@ -1,0 +1,37 @@
+version: "3.3"
+services:
+  property-scraper-1:
+    build: .
+    environment:
+      - SELENIUM_HUB_ADDRESS=${SELENIUM_HUB_ADDRESS}
+      - USER_AGENT=${USER_AGENT}
+    ports:
+      - 8000:8000
+    entrypoint:
+      [
+        "uvicorn",
+        "main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000"
+      ]
+
+  selenium-hub:
+    image: seleniarm/hub:4.1.1-alpha-20220119
+    ports:
+      - 4444:4444
+      - 4442:4442
+      - 4443:4443
+
+  chrome:
+    image: seleniarm/node-chromium:4.1.1-alpha-20220119
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - JAVA_OPTS=-Dwebdriver.chrome.whitelistedIps=
+      - SE_NODE_MAX_SESSIONS=3
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
