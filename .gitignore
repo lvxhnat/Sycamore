@@ -7,3 +7,5 @@ __pycache__
 venv
 resources/documents/
 *.json
+
+digital_ocean_visser*
