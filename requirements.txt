@@ -2,7 +2,6 @@ aiohttp
 aiosignal
 amqp
 anyio
-anyjson
 appnope
 argon2-cffi
 argon2-cffi-bindings
