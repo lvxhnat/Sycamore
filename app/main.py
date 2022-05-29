@@ -52,7 +52,7 @@ def home_page():
 
 
 @app.post("/token", tags=["Authentication"],)
-@limiter.limit("5/minute")
+@limiter.limit("10/minute")
 async def request_auth_token(request: Request):
     """
     Example
@@ -73,7 +73,7 @@ async def request_auth_token(request: Request):
             f"""User is {"authenticated" if authenticated else "not authenticated!"}""")
         if authenticated:
             access_token = auth_utils.generate_token(_user)
-            return {"access_token": access_token, "token_type": "bearere"}
+            return {"access_token": access_token, "token_type": "bearer"}
 
         else:
             raise HTTPException(
@@ -81,7 +81,8 @@ async def request_auth_token(request: Request):
                 detail="Incorrect username or password",
                 headers={"WWW-Authenticate": "Bearer"})
 
-    except:
+    except Exception as e:
+        print(e)
         raise HTTPException(
             status_code=404,
             detail="Invalid Payload Headers Supplied. Make sure payload contains username and password fields",

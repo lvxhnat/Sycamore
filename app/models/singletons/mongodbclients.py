@@ -9,8 +9,8 @@ load_dotenv()
 
 def main():
 
-    main_client = MongoClient('mongodb+srv://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] +
-                              '@' + os.environ['MONGODB_CLUSTERNAME'] + '.nsb6k.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', tlsCAFile=certifi.where())
+    main_client = MongoClient(
+        os.getenv("MONGODB_CONNECTION_STRING"), tlsCAFile=certifi.where())
     visser_database = main_client['Visser']
     sycamore_database = main_client['Sycamore']
 
