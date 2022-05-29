@@ -17,5 +17,4 @@ def get_livestream_url(
         return {"url": url}
 
     except Exception as e:
-        print(e)
         return HTTPException(400, detail=e)
