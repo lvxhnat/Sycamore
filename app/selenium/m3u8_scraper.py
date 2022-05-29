@@ -24,7 +24,7 @@ def retrieve_m3u8_url() -> str:
     URL = "https://watchnewslive.tv/watch-cnbc-live-stream-free-24-7/"
     IFRAME_XPATH = "/html/body/div[1]/div[1]/div/div[1]/div/article/div/div[3]/div[1]/iframe"
 
-    driver = SeleniumChromeDriver.generate_chrome_driver()
+    driver = SeleniumChromeDriver.generate_chrome_driver(type="network")
     driver.get(URL)
 
     element_present = EC.presence_of_element_located((By.XPATH, IFRAME_XPATH))
