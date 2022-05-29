@@ -29,7 +29,7 @@ class SeleniumChromeDriver:
         if type == "network":
             caps = DesiredCapabilities.CHROME
             caps['goog:loggingPrefs'] = {'performance': 'ALL'}
-            webdriver.Chrome(
+            return webdriver.Chrome(
                 chrome_options=self.__generate_chrome_options(), desired_capabilities=caps)
 
         else:
