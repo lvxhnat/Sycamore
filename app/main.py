@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
 from app.utils.auth import auth_utils
+from app.utils.alerts.logger import logging
 from app.routers import api
 
 from starlette.requests import Request
@@ -23,7 +24,7 @@ Please contact me for an auth token if you wish to share the data available here
 app = FastAPI(
     title="Visser",
     description=description,
-    version="0.0.1",
+    version="0.0.8",
     contact={
         "name": "Yi Kuang",
         "email": "yikuang5@gmail.com"
@@ -66,8 +67,11 @@ async def request_auth_token(request: Request):
         params = await request.form()
         _user = params['username']
         _pass = params['password']
+        logging.info(
+            "Verifying from mongoDB... ....")
         authenticated = auth_utils.verify_credentials(_user, _pass)
-
+        logging.info(
+            f"""User is {"authenticated" if authenticated else "not authenticated!"}""")
         if authenticated:
             access_token = auth_utils.generate_token(_user)
             return {"access_token": access_token, "token_type": "bearere"}

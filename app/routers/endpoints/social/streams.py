@@ -11,10 +11,6 @@ router = APIRouter(
 def get_livestream_url(
         token: str = Header(...),
 ):
-    '''
-    Get the weekly ethanol production levels in continental united states
-    '''
-
     try:
         url = retrieve_m3u8_url()
         print("HERE: " + str(url))
