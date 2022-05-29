@@ -140,6 +140,7 @@ pyrsistent
 python-crontab
 python-dateutil
 python-dotenv
+python-multipart
 pytz
 pyxdg
 PyYAML
