@@ -28,8 +28,8 @@ api_router.include_router(
     dependencies=protected_endpoint
 )
 
-api_router.include_router(
-    streams.router,
-    tags=["Streams"],
-    dependencies=protected_endpoint
-)
+# api_router.include_router(
+#     streams.router,
+#     tags=["Streams"],
+#     dependencies=protected_endpoint
+# )

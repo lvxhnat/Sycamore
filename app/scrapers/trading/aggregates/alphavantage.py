@@ -11,7 +11,7 @@ from typing import Union, List
 
 from app.utils.alerts.logger import logging
 from app.models.trading import AssetHistoricalData
-from app.utils.exceptions.api_exception import RateLimitException
+from app.utils.alerts.exceptions.api_exception import RateLimitException
 env_loaded = load_dotenv()
 
 

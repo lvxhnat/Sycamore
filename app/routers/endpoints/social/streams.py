@@ -1,5 +1,5 @@
 from app.utils.alerts.logger import logging
-from app.selenium.m3u8_scraper import retrieve_m3u8_url
+from app.scrapers.selenium.m3u8_scraper import retrieve_m3u8_url
 
 from fastapi import APIRouter, HTTPException, Header
 

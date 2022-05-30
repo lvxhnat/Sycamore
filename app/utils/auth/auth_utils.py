@@ -10,7 +10,7 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends
 
 from app.models.singletons.mongodbclients import user_collection
-from app.utils.exceptions.api_exception import credentials_exception
+from app.utils.alerts.exceptions.api_exception import credentials_exception
 
 load_dotenv()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
