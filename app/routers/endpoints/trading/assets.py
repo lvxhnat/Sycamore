@@ -8,7 +8,7 @@ from fastapi import APIRouter, HTTPException, Header
 from app.scrapers.trading.main import TradingDataClient
 from app.utils.storage_utils import StorageUtility
 from app.utils.alerts.logger import logging
-from app.utils.alerts.metadata_logger import log_metadata
+from app.caching.main_layers import record_trading_metadata
 from app.models.trading import AssetHistoricalData, HistoricalDataParams, HistoricalDataWriteResponse
 
 load_dotenv()
@@ -53,6 +53,8 @@ def get_historical_data(params: HistoricalDataParams,
             }).json()
     ```
     """
+    endpoint = "/historical"
+
     def get_formatted_historical_data(x): return trading_client.get_historical_data(
         ticker=params.ticker, from_date=params.from_date, to_date=params.to_date, resolution=params.resolution, data_format=x)
 
@@ -60,7 +62,6 @@ def get_historical_data(params: HistoricalDataParams,
         jwt_payload = jwt.decode(
             token, os.environ['MASTER_SECRET_KEY'], algorithms=["HS256"])
 
-        endpoint = f"historicaldata/{params.ticker}"
         start_time = time.time()
         storage_url = None
         is_return_type = params.write_type == "return"
@@ -80,14 +81,14 @@ def get_historical_data(params: HistoricalDataParams,
             storage_url = os.path.dirname(os.path.realpath(
                 '__file__')) + "/" + storage_url.replace("..", "")
 
-        meta_data = log_metadata(user=jwt_payload['user'],
-                                 endpoint='/'.join(endpoint.split("_")),
-                                 write_type=params.write_type,
-                                 job_description={
-                                     "number_of_rows": len(historical_data)},
-                                 time_elapsed_seconds=round(
-                                     time.time() - start_time),
-                                 write_path=storage_url)
+        meta_data = record_trading_metadata(user=jwt_payload['user'],
+                                            endpoint='/'.join(endpoint.split("_")),
+                                            write_type=params.write_type,
+                                            job_description={
+            "number_of_rows": len(historical_data)},
+            time_elapsed_seconds=round(
+            time.time() - start_time),
+            write_path=storage_url)
 
         return historical_data if is_return_type else meta_data
 

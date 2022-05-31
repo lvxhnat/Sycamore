@@ -55,12 +55,14 @@ def home_page():
 @limiter.limit("10/minute")
 async def request_auth_token(request: Request):
     """
-    Example
-    ==========
-    requests.post("http://localhost:8080/requestauthtoken", data = {
+    ### Example Python Request
+    -------------
+    ```python
+    >>> requests.post("http://localhost:8080/requestauthtoken", data = {
         "username": "username", 
         "password": "password"
     })
+    ```
     """
     try:
         params = await request.form()
@@ -91,4 +93,4 @@ async def request_auth_token(request: Request):
 app.include_router(api.api_router, prefix="/api")
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=1236)
+    uvicorn.run(app, host="0.0.0.0", port=1236, reload=True)

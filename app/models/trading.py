@@ -1,11 +1,17 @@
 from datetime import datetime
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Literal
 
 from app.models.base import DefaultBaseModel
 from app.models.writetype import storage_type
 load_dotenv()
+
+
+SupportedTradingEndpoints = Literal["historical"]
+SupportAssetTypes = Literal["Stock", "Forex", "Crypto"]
+SupportedTradingResolutions = Literal["1MIN", "5MIN", "15MIN", "30MIN", "1H", "D", "5D", "15D",
+                                      "30D", "60D", "W", "5W", "15W", "30W", "60W", "M", "5M", "15M", "30M", "60M"]
 
 
 class AssetHistoricalData(BaseModel):
@@ -20,22 +26,18 @@ class AssetHistoricalData(BaseModel):
 
 
 class DefaultTradingParamsBaseModel(BaseModel):
-    ticker: str = Field(None, description="The ticker symbol given.")
+    ticker: str = Field(
+        "NFLX", description="The ticker symbol given.")
     from_date: str = Field(
-        None, description="Date we want to get our ticker data from. In format %Y-%m-%d")
+        "2021-01-01", description="Date we want to get our ticker data from. In format %Y-%m-%d")
     to_date: str = Field(
-        None, description="Date we want to get our ticker data to. In format %Y-%m-%d")
+        datetime.today().strftime("%Y-%m-%d"), description="Date we want to get our ticker data to. In format %Y-%m-%d")
     resolution: str = Field(
-        None, description="The resolution/interval of our data. ")
+        SupportedTradingResolutions, description="The resolution/interval of our data. ")
     instruments: str = Field(
-        None, description="The financial instrument. Stock, Cryptocurrency, Futures, Options."
+        "Stock", description="The financial instrument. Stock, Cryptocurrency, Futures, Options."
     )
     write_type: Optional[storage_type] = "return"
-
-    class Config:
-        schema_extra = {
-
-        }
 
 
 class DefaultTradingResponseBaseModel(DefaultBaseModel):

@@ -8,7 +8,6 @@ from fastapi import APIRouter, HTTPException, Header
 
 from app.models.writetype import storage_type
 from app.models.agriculture import AgriculturalResponse
-from app.utils.alerts.metadata_logger import log_metadata
 from app.scrapers.economics.agriculture.eia import EIAScraperClient
 from app.scrapers.economics.agriculture.usda import USDAScraperClient
 from app.utils.storage_utils import StorageUtility
@@ -50,13 +49,13 @@ def scrape_and_write_weekly_ethanol_production(
         storage_url = os.path.dirname(os.path.realpath(
             '__file__')) + "/" + storage_url.replace("..", "")
 
-        return log_metadata(user=jwt_payload['user'],
-                            endpoint='/'.join(endpoint.split("_")),
-                            write_type=write_type,
-                            job_description={},
-                            time_elapsed_seconds=round(
-                                time.time() - start_time),
-                            write_path=storage_url)
+        # return log_metadata(user=jwt_payload['user'],
+        #                     endpoint='/'.join(endpoint.split("_")),
+        #                     write_type=write_type,
+        #                     job_description={},
+        #                     time_elapsed_seconds=round(
+        #                         time.time() - start_time),
+        #                     write_path=storage_url)
 
     except Exception as e:
         return HTTPException(400, detail=e)

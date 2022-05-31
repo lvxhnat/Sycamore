@@ -5,7 +5,6 @@ import pandas as pd
 from dotenv import load_dotenv
 
 from app.models import social
-from app.utils.alerts.metadata_logger import log_metadata
 from app.utils.storage_utils import StorageUtility
 from app.utils.cleaning.platform.twitter_clean import clean_twitter_follows
 from app.scrapers.social.twitter import TwitterScraperClient
@@ -57,13 +56,13 @@ def scrape_and_write_twitter_followings_task(
         write_type=params.write_type,
         endpoint_storage=endpoint)
 
-    return log_metadata(user=jwt_payload['user'],
-                        endpoint='/'.join(endpoint.split("_")),
-                        write_type=params.write_type,
-                        job_description={"users_requested": users_requested,
-                                         "users_requested_extracted": users_extracted},
-                        time_elapsed_seconds=round(time.time() - start_time),
-                        write_path=storage_url)
+    # return log_metadata(user=jwt_payload['user'],
+    #                     endpoint='/'.join(endpoint.split("_")),
+    #                     write_type=params.write_type,
+    #                     job_description={"users_requested": users_requested,
+    #                                      "users_requested_extracted": users_extracted},
+    #                     time_elapsed_seconds=round(time.time() - start_time),
+    #                     write_path=storage_url)
 
 
 @router.post("/followers", response_model=social.FollowersResponse)
@@ -102,10 +101,10 @@ def scrape_and_write_twitter_followers_task(
         user=jwt_payload['user'],
         endpoint_storage=endpoint)
 
-    return log_metadata(user=jwt_payload['user'],
-                        endpoint='/'.join(endpoint.split("_")),
-                        write_type=params.write_type,
-                        job_description={"users_requested": users_requested,
-                                         "users_requested_extracted": users_extracted},
-                        time_elapsed_seconds=round(time.time() - start_time),
-                        write_path=storage_url)
+    # return log_metadata(user=jwt_payload['user'],
+    #                     endpoint='/'.join(endpoint.split("_")),
+    #                     write_type=params.write_type,
+    #                     job_description={"users_requested": users_requested,
+    #                                      "users_requested_extracted": users_extracted},
+    #                     time_elapsed_seconds=round(time.time() - start_time),
+    #                     write_path=storage_url)
