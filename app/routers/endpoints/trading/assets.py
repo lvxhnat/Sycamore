@@ -20,7 +20,7 @@ router = APIRouter(
 trading_client = TradingDataClient()
 
 
-@router.post("/historical", response_model=Union[HistoricalDataWriteResponse, List[AssetHistoricalData]])
+@router.post("/historical", response_model = Union[HistoricalDataWriteResponse, List[AssetHistoricalData]])
 def get_historical_data(params: HistoricalDataParams,
                         token: str = Header(...),):
     """

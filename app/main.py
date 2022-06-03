@@ -24,6 +24,7 @@ app = FastAPI(
     title="Visser",
     description=description,
     version="0.0.8",
+    root_apth="/",
     contact={
         "name": "Yi Kuang",
         "email": "yikuang5@gmail.com"

@@ -33,7 +33,7 @@ class DefaultTradingParamsBaseModel(BaseModel):
     to_date: str = Field(
         datetime.today().strftime("%Y-%m-%d"), description="Date we want to get our ticker data to. In format %Y-%m-%d")
     resolution: str = Field(
-        SupportedTradingResolutions, description="The resolution/interval of our data. ")
+        "1M", description="The resolution/interval of our data. ")
     instruments: str = Field(
         "Stock", description="The financial instrument. Stock, Cryptocurrency, Futures, Options."
     )
