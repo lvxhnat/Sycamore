@@ -81,16 +81,16 @@ def get_historical_data(params: HistoricalDataParams,
             storage_url = os.path.dirname(os.path.realpath(
                 '__file__')) + "/" + storage_url.replace("..", "")
 
-        meta_data = record_trading_metadata(user=jwt_payload['user'],
-                                            endpoint='/'.join(endpoint.split("_")),
-                                            write_type=params.write_type,
-                                            job_metadata={
-            "number_of_rows": len(historical_data)},
-            time_elapsed_seconds=round(
-            time.time() - start_time),
-            write_path=storage_url)
+        # meta_data = record_trading_metadata(user=jwt_payload['user'],
+        #                                     endpoint='/'.join(endpoint.split("_")),
+        #                                     write_type=params.write_type,
+        #                                     job_metadata={
+        #     "number_of_rows": len(historical_data)},
+        #     time_elapsed_seconds=round(
+        #     time.time() - start_time),
+        #     write_path=storage_url)
 
-        return historical_data if is_return_type else meta_data
+        return historical_data # if is_return_type else meta_data
 
     except Exception as e:
         logging.error(e)
