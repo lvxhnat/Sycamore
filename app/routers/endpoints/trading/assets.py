@@ -84,7 +84,7 @@ def get_historical_data(params: HistoricalDataParams,
         meta_data = record_trading_metadata(user=jwt_payload['user'],
                                             endpoint='/'.join(endpoint.split("_")),
                                             write_type=params.write_type,
-                                            job_description={
+                                            job_metadata={
             "number_of_rows": len(historical_data)},
             time_elapsed_seconds=round(
             time.time() - start_time),
