@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from app.scrapers.base import BaseClient
 from app.utils.alerts.logger import logging
 from app.utils.cleaning.datetime_clean import date_to_unixtime
-from app.models.trading import AssetHistoricalData
+from app.models.endpoints.trading import AssetHistoricalData
 
 
 class FinnhubClient(BaseClient):
