@@ -2,16 +2,25 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
-
-from app.utils.auth import auth_utils
-from app.utils.alerts.logger import logging
-from app.routers import api
-
-from starlette.requests import Request
-
-from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+from slowapi import Limiter, _rate_limit_exceeded_handler
+
+
+import os
+import jwt
+import uuid
+import time
+import fastapi
+import pandas as pd
+from datetime import datetime
+
+from app.routers import api
+from app.utils.auth import auth_utils
+from app.utils.alerts.logger import logging
+from app.models.metadata import UserCallMetadataInterface
+from app.middleware.entrypoint import plugin_metadata_producer
+from app.models.singletons.mongodbclients import user_call_metadata_collection
 
 limiter = Limiter(key_func=get_remote_address)
 description = """ 
@@ -32,6 +41,55 @@ app = FastAPI(
 )
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+
+async def set_body(request: fastapi.Request):
+    receive_ = await request._receive()
+
+    async def receive():
+        return receive_
+
+    request._receive = receive
+
+
+@app.middleware("http")
+async def add_process_time_header(request: fastapi.Request, call_next):
+
+    endpoint = request.scope['path']
+
+    if endpoint in plugin_metadata_producer.keys():  # Available endpoints
+
+        await set_body(request)
+
+        params = await request.json()
+
+        start_time = time.time()
+
+        FUNC_RESULTS: pd.DataFrame = await call_next(request)
+
+        time_elapsed = round(time.time() - start_time)
+        token = request.headers['token']
+
+        user_call_metadata: UserCallMetadataInterface = {
+            "_id": str(uuid.uuid4()),
+            "endpoint_called": endpoint,
+            "date_extracted": datetime.today(),
+            "user": jwt.decode(token, os.environ['MASTER_SECRET_KEY'], algorithms=["HS256"]),
+            "time_elapsed": time_elapsed,
+            "status": FUNC_RESULTS.status_code if isinstance(FUNC_RESULTS, HTTPException) else 200,
+        }
+        log_metadata_plugin = plugin_metadata_producer[endpoint](params)
+
+        if not log_metadata_plugin:
+            raise HTTPException(
+                status_code=422, detail=f"Failed to write {endpoint} metadata due to KeyError for endpoint")
+
+        else:
+            user_call_metadata_collection.insert_one(user_call_metadata)
+            return FUNC_RESULTS
+
+    else:
+        return await call_next(request)
 
 origins = [
     "http://localhost"
@@ -54,7 +112,7 @@ def home_page():
 
 @app.post("/token", tags=["Authentication"],)
 @limiter.limit("10/minute")
-async def request_auth_token(request: Request):
+async def request_auth_token(request: fastapi.Request):
     """
     ### Example Python Request
     -------------
@@ -85,7 +143,6 @@ async def request_auth_token(request: Request):
                 headers={"WWW-Authenticate": "Bearer"})
 
     except Exception as e:
-        print(e)
         raise HTTPException(
             status_code=404,
             detail="Invalid Payload Headers Supplied. Make sure payload contains username and password fields",

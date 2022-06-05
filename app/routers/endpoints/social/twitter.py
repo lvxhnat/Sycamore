@@ -1,15 +1,14 @@
-import os
-import jwt
-import time
 import pandas as pd
 from dotenv import load_dotenv
 
-from app.models import social
-from app.utils.storage_utils import StorageUtility
+from app.models.endpoints import social
 from app.utils.cleaning.platform.twitter_clean import clean_twitter_follows
 from app.scrapers.social.twitter import TwitterScraperClient
 
 from fastapi import APIRouter, HTTPException, Header
+
+from app.utils.storage.cloud_utils import CloudUtility
+from app.utils.storage.storage_urls import twitter_followers_storage_url, twitter_followings_storage_url
 
 load_dotenv()
 
@@ -25,86 +24,84 @@ def scrape_and_write_twitter_followings_task(
         params: social.FollowingsParams,
         token: str = Header(...),
 ):
-    jwt_payload = jwt.decode(
-        token, os.environ['MASTER_SECRET_KEY'], algorithms=["HS256"])
-    neither_defined = (params.user_ids or params.screen_names) is None
-    endpoint = "twitter_followings"
+    """
+    # Parameters
+    -------------
+    **user_ids**        : List of user id strings or integers in format: [...] or [..., ..., ...]
+    **screen_names**    : List of user id strings or integers in format: [...] or [..., ..., ...]
+    **return_data**     : Optional[bool], Defaults as True
 
-    if neither_defined:
+    # Example Python Request
+    -------------
+    ```python
+    >>> requests.post(f"http://localhost:8080/api/twitter/followings",
+            data = json.dumps({
+                "user_ids": [],
+                "screen_names": ["donaldtrump", "koolaid"]
+                "return_data": "true"
+            }),
+            headers = {
+                "token": api_token
+            }).json()
+    ```
+    """
+    if (params.user_ids or params.screen_names) is None:
         raise HTTPException(
             status_code=404,
             detail="Error 404: screen id or screen name needs to be defined",
         )
 
-    start_time = time.time()
-
     twitter_api_client = TwitterScraperClient(api_keys=twitter_api_keys)
 
-    twitter_followings_data = pd.concat(twitter_api_client.iter_processed_followings(
-        screen_names=params.screen_names, user_ids=params.user_ids))
+    df = clean_twitter_follows(pd.concat(twitter_api_client.iter_processed_followings(
+        screen_names=params.screen_names, user_ids=params.user_ids)))
 
-    twitter_followings_data = clean_twitter_follows(
-        twitter_followings_data)
-    users_extracted = twitter_followings_data.twitter_follower_id.nunique()
-    users_requested = check_user_length(
-        params.screen_names) + check_user_length(params.user_ids)
+    cloud_singleton = CloudUtility()
+    cloud_singleton.write_to_cloud_storage(
+        dataframe=df, storage_url=twitter_followings_storage_url(params))
 
-    storage_util = StorageUtility()
-    storage_url = storage_util.store_items(
-        twitter_followings_data,
-        user=jwt_payload['user'],
-        write_type=params.write_type,
-        endpoint_storage=endpoint)
-
-    # return log_metadata(user=jwt_payload['user'],
-    #                     endpoint='/'.join(endpoint.split("_")),
-    #                     write_type=params.write_type,
-    #                     job_description={"users_requested": users_requested,
-    #                                      "users_requested_extracted": users_extracted},
-    #                     time_elapsed_seconds=round(time.time() - start_time),
-    #                     write_path=storage_url)
+    return df
 
 
 @router.post("/followers", response_model=social.FollowersResponse)
 def scrape_and_write_twitter_followers_task(
         params: social.FollowersParams,
-        token: str = Header(...),
-):
-    jwt_payload = jwt.decode(
-        token, os.environ['MASTER_SECRET_KEY'], algorithms=["HS256"])
-    neither_defined = (params.user_ids or params.screen_names) is None
-    endpoint = "twitter_followers"
+        token: str = Header(...),):
+    """
+    # Parameters
+    -------------
+    **user_ids**        : List of user id strings or integers in format: [...] or [..., ..., ...]
+    **screen_names**    : List of user id strings or integers in format: [...] or [..., ..., ...]
+    **return_data**     : Optional[bool], Defaults as True
 
-    if neither_defined:
+    # Example Python Request
+    -------------
+    ```python
+    >>> requests.post(f"http://localhost:8080/api/twitter/followers",
+            data = json.dumps({
+                "user_ids": [],
+                "screen_names": ["donaldtrump", "koolaid"]
+                "return_data": "true"
+            }),
+            headers = {
+                "token": api_token
+            }).json()
+    ```
+    """
+
+    if (params.user_ids or params.screen_names) is None:
         raise HTTPException(
             status_code=404,
             detail="Error 404: screen id or screen name needs to be defined"
         )
 
-    start_time = time.time()
-
     twitter_api_client = TwitterScraperClient(api_keys=twitter_api_keys)
 
-    twitter_followers_data = pd.concat(twitter_api_client.iter_processed_followers(
-        screen_names=params.screen_names, user_ids=params.user_ids))
+    df = clean_twitter_follows(pd.concat(twitter_api_client.iter_processed_followers(
+        screen_names=params.screen_names, user_ids=params.user_ids)))
 
-    twitter_followers_data = clean_twitter_follows(
-        twitter_followers_data)
-    users_extracted = twitter_followers_data.twitter_follower_id.nunique()
-    users_requested = check_user_length(
-        params.screen_names) + check_user_length(params.user_ids)
+    cloud_singleton = CloudUtility()
+    cloud_singleton.write_to_cloud_storage(
+        dataframe=df, storage_url=twitter_followers_storage_url(len(params.user_ids)))
 
-    storage_util = StorageUtility()
-    storage_url = storage_util.store_items(
-        twitter_followers_data,
-        write_type=params.write_type,
-        user=jwt_payload['user'],
-        endpoint_storage=endpoint)
-
-    # return log_metadata(user=jwt_payload['user'],
-    #                     endpoint='/'.join(endpoint.split("_")),
-    #                     write_type=params.write_type,
-    #                     job_description={"users_requested": users_requested,
-    #                                      "users_requested_extracted": users_extracted},
-    #                     time_elapsed_seconds=round(time.time() - start_time),
-    #                     write_path=storage_url)
+    return df

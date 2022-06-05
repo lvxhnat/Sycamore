@@ -31,8 +31,7 @@ class TradingDataClient:
                               DAY: 1D, 5D, 15D, 30D, 60D
                               WEEK: 1W, 5W, 15W, 30W, 60W
                               MONTH: 1M, 5M, 15M, 30M, 60M
-
-
+        data_format -> [str]: the default data format to return, either json or csv
         """
         alphavantage_supported_intervals = [
             "1MIN", "5MIN", "15MIN", "30MIN", "1H"]
