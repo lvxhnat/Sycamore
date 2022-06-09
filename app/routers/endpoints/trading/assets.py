@@ -1,12 +1,10 @@
 from dotenv import load_dotenv
-from typing import Union, List
 from fastapi import APIRouter, HTTPException, Header
 
-from app.utils.alerts.logger import logging
 from app.utils.storage.cloud_utils import CloudUtility
 from app.scrapers.trading.main import TradingDataClient
 from app.utils.storage.storage_urls import trading_metadata_storage_url
-from app.models.endpoints.trading import HistoricalDataListResponse, HistoricalDataParams
+from app.models.endpoints.trading import HistoricalDataParams
 
 
 load_dotenv()
@@ -18,7 +16,7 @@ router = APIRouter(
 trading_client = TradingDataClient()
 
 
-@router.post("/historical")
+@router.post("/historical", deprecated=True)
 def get_historical_data(params: HistoricalDataParams,
                         token: str = Header(...),):
     """

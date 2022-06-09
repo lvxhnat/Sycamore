@@ -9,8 +9,6 @@ from google.cloud import storage
 from google.cloud import bigquery
 from google.oauth2 import service_account
 
-from app.utils.alerts.logger import logging
-
 import dotenv
 dotenv.load_dotenv()
 os.environ['GOOGLE_APPLICATION_CREDENTIALS']
