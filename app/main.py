@@ -43,53 +43,53 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
-async def set_body(request: fastapi.Request):
-    receive_ = await request._receive()
+# async def set_body(request: fastapi.Request):
+#     receive_ = await request._receive()
 
-    async def receive():
-        return receive_
+#     async def receive():
+#         return receive_
 
-    request._receive = receive
+#     request._receive = receive
 
 
-@app.middleware("http")
-async def add_process_time_header(request: fastapi.Request, call_next):
+# @app.middleware("http")
+# async def add_process_time_header(request: fastapi.Request, call_next):
 
-    endpoint = request.scope['path']
+#     endpoint = request.scope['path']
 
-    if endpoint in plugin_metadata_producer.keys():  # Available endpoints
+#     if endpoint in plugin_metadata_producer.keys():  # Available endpoints
 
-        await set_body(request)
+#         await set_body(request)
 
-        params = await request.json()
+#         params = await request.json()
 
-        start_time = time.time()
+#         start_time = time.time()
 
-        FUNC_RESULTS: pd.DataFrame = await call_next(request)
+#         FUNC_RESULTS: pd.DataFrame = await call_next(request)
 
-        time_elapsed = round(time.time() - start_time)
-        token = request.headers['token']
+#         time_elapsed = round(time.time() - start_time)
+#         token = request.headers['token']
 
-        user_call_metadata: UserCallMetadataInterface = {
-            "_id": str(uuid.uuid4()),
-            "endpoint_called": endpoint,
-            "date_extracted": datetime.today(),
-            "user": jwt.decode(token, os.environ['MASTER_SECRET_KEY'], algorithms=["HS256"]),
-            "time_elapsed": time_elapsed,
-            "status": FUNC_RESULTS.status_code if isinstance(FUNC_RESULTS, HTTPException) else 200,
-        }
-        log_metadata_plugin = plugin_metadata_producer[endpoint](params)
+#         user_call_metadata: UserCallMetadataInterface = {
+#             "_id": str(uuid.uuid4()),
+#             "endpoint_called": endpoint,
+#             "date_extracted": datetime.today(),
+#             "user": jwt.decode(token, os.environ['MASTER_SECRET_KEY'], algorithms=["HS256"]),
+#             "time_elapsed": time_elapsed,
+#             "status": FUNC_RESULTS.status_code if isinstance(FUNC_RESULTS, HTTPException) else 200,
+#         }
+#         log_metadata_plugin = plugin_metadata_producer[endpoint](params)
 
-        if not log_metadata_plugin:
-            raise HTTPException(
-                status_code=422, detail=f"Failed to write {endpoint} metadata due to KeyError for endpoint")
+#         if not log_metadata_plugin:
+#             raise HTTPException(
+#                 status_code=422, detail=f"Failed to write {endpoint} metadata due to KeyError for endpoint")
 
-        else:
-            user_call_metadata_collection.insert_one(user_call_metadata)
-            return FUNC_RESULTS
+#         else:
+#             user_call_metadata_collection.insert_one(user_call_metadata)
+#             return FUNC_RESULTS
 
-    else:
-        return await call_next(request)
+#     else:
+#         return await call_next(request)
 
 origins = [
     "http://localhost"
