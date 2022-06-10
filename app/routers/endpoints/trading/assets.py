@@ -16,7 +16,7 @@ router = APIRouter(
 trading_client = TradingDataClient()
 
 
-@router.post("/historical", deprecated=True)
+@router.post("/historical")
 def get_historical_data(params: HistoricalDataParams,
                         token: str = Header(...),):
     """
@@ -56,6 +56,7 @@ def get_historical_data(params: HistoricalDataParams,
 
     try:
         df = get_formatted_historical_data("csv")
+        print(df)
         cloud_singleton = CloudUtility()
         write_path = cloud_singleton.write_to_cloud_storage(
             dataframe=df, storage_url=trading_metadata_storage_url({
@@ -72,4 +73,5 @@ def get_historical_data(params: HistoricalDataParams,
         }
 
     except Exception as e:
+        print(e)
         return HTTPException(400, detail=e)

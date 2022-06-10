@@ -41,8 +41,12 @@ class TradingDataClient:
         instrument = instrument.strip(" ").lower()
         resolution = resolution.strip(" ").upper()
         resolution = resolution.strip(
-            "1") if "MIN" not in resolution or "H" not in resolution else resolution
-
+            "1") if (
+                "MIN" not in resolution and
+                "H" not in resolution and
+                "D" not in resolution
+        ) else resolution
+        print(resolution)
         if resolution in finnhub_supported_intervals:
             historical_data = self.finnhub_client.get_historical_data(
                 ticker=ticker,
