@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
-from app.models.base import DefaultBaseModel
+from app.models.endpoints.base import DefaultBaseModel
 from app.models.writetype import storage_type
 load_dotenv()
 
@@ -13,7 +13,7 @@ class DefaultTwitterParamsBaseModel(BaseModel):
         None, description="List of user id strings or integers in format: [...] or [..., ..., ...]")
     screen_names: List[str] = Field(
         None, description="List of user id strings or integers in format: [...] or [..., ..., ...]")
-    write_type: Optional[storage_type] = "cloudstorage"
+    return_data: Optional[bool] = True
 
     class Config:
         schema_extra = {

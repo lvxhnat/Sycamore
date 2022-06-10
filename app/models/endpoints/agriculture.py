@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from app.models.base import DefaultBaseModel
+from app.models.endpoints.base import DefaultBaseModel
 
 
 class DefaultAgriculturalResponseBaseModel(DefaultBaseModel):

@@ -1,14 +1,13 @@
 from datetime import datetime
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
-from typing import Optional, Literal
+from typing import Optional, List
+from typing_extensions import Literal
 
-from app.models.base import DefaultBaseModel
+from app.models.endpoints.base import DefaultBaseModel
 from app.models.writetype import storage_type
 load_dotenv()
 
-
-SupportedTradingEndpoints = Literal["historical"]
 SupportAssetTypes = Literal["Stock", "Forex", "Crypto"]
 SupportedTradingResolutions = Literal["1MIN", "5MIN", "15MIN", "30MIN", "1H", "D", "5D", "15D",
                                       "30D", "60D", "W", "5W", "15W", "30W", "60W", "M", "5M", "15M", "30M", "60M"]
@@ -34,10 +33,10 @@ class DefaultTradingParamsBaseModel(BaseModel):
         datetime.today().strftime("%Y-%m-%d"), description="Date we want to get our ticker data to. In format %Y-%m-%d")
     resolution: str = Field(
         "1M", description="The resolution/interval of our data. ")
-    instruments: str = Field(
-        "Stock", description="The financial instrument. Stock, Cryptocurrency, Futures, Options."
+    instrument: str = Field(
+        default="Stock", description="The financial instrument. Stock, Cryptocurrency, Futures, Options."
     )
-    write_type: Optional[storage_type] = "return"
+    return_data: Optional[bool] = True
 
 
 class DefaultTradingResponseBaseModel(DefaultBaseModel):
@@ -57,6 +56,11 @@ class DefaultTradingResponseBaseModel(DefaultBaseModel):
                 "write_path": 'mongodb("Visser", "historical_data")'
             }
         }
+
+
+class HistoricalDataListResponse(BaseModel):
+    response: List[AssetHistoricalData]
+    write_path: str
 
 
 class HistoricalDataParams(DefaultTradingParamsBaseModel):

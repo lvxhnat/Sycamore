@@ -12,12 +12,15 @@ def main():
         os.getenv("MONGODB_CONNECTION_STRING"), tlsCAFile=certifi.where())
     visser_database = main_client['visser_main']
     visser_cache_database = main_client['visser_metadata']
-    sycamore_database = main_client['Sycamore']
 
-    return sycamore_database, visser_database, visser_cache_database
+    return visser_database, visser_cache_database
 
 
-sycamore_database, visser_database, visser_cache_database = main()
+1
+
+visser_database, visser_cache_database = main()
 
 user_collection = visser_database['users']
-usertransaction_collection = sycamore_database['user_transactions']
+historical_trading_metadata_collection = visser_cache_database['historical_trading_metadata']
+user_call_metadata_collection = visser_cache_database['user_call_metadata']
+twitter_metadata_collection = visser_cache_database['twitter_metadata']

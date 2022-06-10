@@ -1,8 +1,10 @@
 from pydantic import BaseModel
-from typing import Dict, Literal
+from typing import Dict
+from typing_extensions import Literal
 
 AllowedWriteTypes = Literal['return',
                             'localstorage', 'cloudstorage', 'databasestorage']
+
 
 class DefaultBaseModel(BaseModel):
     user: str

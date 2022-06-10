@@ -8,7 +8,7 @@ router = APIRouter(
 )
 
 
-@router.get("/watchlivestream")
+@router.get("/watchlivestream", deprecated=True)
 def get_livestream_url(
         token: str = Header(...),
 ):

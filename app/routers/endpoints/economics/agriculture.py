@@ -1,3 +1,4 @@
+from doctest import DocFileCase, DocFileSuite
 import os
 import jwt
 import time
@@ -7,10 +8,11 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Header
 
 from app.models.writetype import storage_type
-from app.models.agriculture import AgriculturalResponse
+from app.models.endpoints.agriculture import AgriculturalResponse
 from app.scrapers.economics.agriculture.eia import EIAScraperClient
 from app.scrapers.economics.agriculture.usda import USDAScraperClient
-from app.utils.storage_utils import StorageUtility
+from app.utils.storage.cloud_utils import CloudUtility
+from app.utils.storage.storage_urls import ethanol_prod_storage_url, ethanol_stock_storage_url
 
 load_dotenv()
 
@@ -29,33 +31,13 @@ def scrape_and_write_weekly_ethanol_production(
     '''
 
     try:
-        jwt_payload = jwt.decode(
-            token, os.environ['MASTER_SECRET_KEY'], algorithms=["HS256"])
-        endpoint = "agriculture_ethanolprod"
-        start_time = time.time()
-
         ethanol_api_client = EIAScraperClient()
+        df = ethanol_api_client.get_weekly_ethanol_production_levels()
+        cloud_singleton = CloudUtility()
+        cloud_singleton.write_to_cloud_storage(
+            dataframe=df, storage_url=ethanol_prod_storage_url())
 
-        ethanol_data = ethanol_api_client.get_weekly_ethanol_production_levels()
-
-        storage_util = StorageUtility()
-        storage_url = storage_util.store_items(
-            ethanol_data,
-            user=jwt_payload['user'],
-            write_type=write_type,
-            endpoint_storage=endpoint)
-
-        # cd .. and join the storage url
-        storage_url = os.path.dirname(os.path.realpath(
-            '__file__')) + "/" + storage_url.replace("..", "")
-
-        # return log_metadata(user=jwt_payload['user'],
-        #                     endpoint='/'.join(endpoint.split("_")),
-        #                     write_type=write_type,
-        #                     job_description={},
-        #                     time_elapsed_seconds=round(
-        #                         time.time() - start_time),
-        #                     write_path=storage_url)
+        return df
 
     except Exception as e:
         return HTTPException(400, detail=e)
@@ -71,33 +53,13 @@ def scrape_and_write_weekly_ethanol_ending_stocks(
     '''
 
     try:
-        jwt_payload = jwt.decode(
-            token, os.environ['MASTER_SECRET_KEY'], algorithms=["HS256"])
-        endpoint = "agriculture_ethanolstock"
-        start_time = time.time()
-
         ethanol_api_client = EIAScraperClient()
+        df = ethanol_api_client.get_weekly_ethanol_ending_stocks()
+        cloud_singleton = CloudUtility()
+        cloud_singleton.write_to_cloud_storage(
+            dataframe=df, storage_url=ethanol_stock_storage_url())
 
-        ethanol_data = ethanol_api_client.get_weekly_ethanol_ending_stocks()
-
-        storage_util = StorageUtility()
-        storage_url = storage_util.store_items(
-            ethanol_data,
-            user=jwt_payload['user'],
-            write_type=write_type,
-            endpoint_storage=endpoint)
-
-        # cd .. and join the storage url
-        storage_url = os.path.dirname(os.path.realpath(
-            '__file__')) + "/" + storage_url.replace("..", "")
-
-        return log_metadata(user=jwt_payload['user'],
-                            endpoint='/'.join(endpoint.split("_")),
-                            write_type=write_type,
-                            job_description={},
-                            time_elapsed_seconds=round(
-                                time.time() - start_time),
-                            write_path=storage_url)
+        return df
 
     except Exception as e:
         return HTTPException(400, detail=e)
@@ -111,35 +73,10 @@ def scrape_and_write_usda_crop_production_reports(
     '''
     Get the weekly ethanol production levels in continental united states
     '''
-
     try:
-        jwt_payload = jwt.decode(
-            token, os.environ['MASTER_SECRET_KEY'], algorithms=["HS256"])
-        endpoint = "agriculture_cropreports"
-        start_time = time.time()
-
         usda_api_client = USDAScraperClient()
-
         crop_production_report_data = usda_api_client.get_crop_production_reports()
-
-        storage_util = StorageUtility()
-        storage_url = storage_util.store_items(
-            crop_production_report_data,
-            user=jwt_payload['user'],
-            write_type=write_type,
-            endpoint_storage=endpoint)
-
-        # cd .. and join the storage url
-        storage_url = os.path.dirname(os.path.realpath(
-            '__file__')) + "/" + storage_url.replace("..", "")
-
-        return log_metadata(user=jwt_payload['user'],
-                            endpoint='/'.join(endpoint.split("_")),
-                            write_type=write_type,
-                            job_description={},
-                            time_elapsed_seconds=round(
-                                time.time() - start_time),
-                            write_path=storage_url)
+        return crop_production_report_data
 
     except Exception as e:
         return HTTPException(400, detail=e)

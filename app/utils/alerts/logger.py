@@ -7,8 +7,8 @@ logger.propagate = False
 shell_handler = logging.StreamHandler(sys.stdout)
 # file_handler = logging.FileHandler("debug.log")
 
-logger.setLevel(logging.DEBUG)
-shell_handler.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
+shell_handler.setLevel(logging.INFO)
 # file_handler.setLevel(logging.WARNING)
 
 fmt_shell = "[%(asctime)s: %(levelname)s %(funcName)s] %(message)s"

@@ -31,8 +31,7 @@ class TradingDataClient:
                               DAY: 1D, 5D, 15D, 30D, 60D
                               WEEK: 1W, 5W, 15W, 30W, 60W
                               MONTH: 1M, 5M, 15M, 30M, 60M
-
-
+        data_format -> [str]: the default data format to return, either json or csv
         """
         alphavantage_supported_intervals = [
             "1MIN", "5MIN", "15MIN", "30MIN", "1H"]
@@ -42,8 +41,12 @@ class TradingDataClient:
         instrument = instrument.strip(" ").lower()
         resolution = resolution.strip(" ").upper()
         resolution = resolution.strip(
-            "1") if "MIN" not in resolution or "H" not in resolution else resolution
-
+            "1") if (
+                "MIN" not in resolution and
+                "H" not in resolution and
+                "D" not in resolution
+        ) else resolution
+        print(resolution)
         if resolution in finnhub_supported_intervals:
             historical_data = self.finnhub_client.get_historical_data(
                 ticker=ticker,

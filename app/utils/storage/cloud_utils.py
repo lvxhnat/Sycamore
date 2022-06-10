@@ -1,6 +1,7 @@
 import os
-import logging
+import numpy as np
 import pandas as pd
+from datetime import datetime
 
 import gcsfs
 import pandas_gbq
@@ -10,6 +11,7 @@ from google.oauth2 import service_account
 
 import dotenv
 dotenv.load_dotenv()
+os.environ['GOOGLE_APPLICATION_CREDENTIALS']
 
 
 class CloudUtility:
@@ -33,7 +35,7 @@ class CloudUtility:
         self.fs = gcsfs.GCSFileSystem(
             project=self.project_id, token=os.environ["GOOGLE_APPLICATION_CREDENTIALS"])
 
-    def get_files_with_prefix_from_gcs(self, bucket_name = os.environ['GOOGLE_BUCKET_NAME'], prefix="", delimiter=None):
+    def get_files_with_prefix_from_gcs(self, bucket_name=os.environ['GOOGLE_BUCKET_NAME'], prefix="", delimiter=None):
         storage_client = storage.Client()
         bucket = storage_client.get_bucket(self.bucket_name)
         blobs = bucket.list_blobs(prefix=prefix, delimiter=delimiter)
@@ -42,7 +44,8 @@ class CloudUtility:
 
     def read_files_from_gcs(self, folder, prefix="", sep="\t", delimiter=None):
         read_base = "gs://" + self.bucket_name + "/"
-        blobs = self.get_files_with_prefix_from_gcs(self.bucket_name, prefix=folder)
+        blobs = self.get_files_with_prefix_from_gcs(
+            self.bucket_name, prefix=folder)
         all_data = pd.DataFrame()
         temp = pd.DataFrame()
         files_done = 0
@@ -58,8 +61,40 @@ class CloudUtility:
         all_data = pd.concat([all_data, temp])
         return all_data
 
-    def write_files_to_gcs(self, df, write_path, sep="\t"):
-        with self.fs.open("gs://" + self.bucket_name + "/" + write_path, "w") as f:
+    def write_to_cloud_storage(
+            self,
+            dataframe: pd.DataFrame,
+            storage_url: str):
+        ''' function to write data to google cloud storage
+        Parameters
+        =============
+        chunks -> List[pd.DataFrame]        : A list of pandas dataframes containing the data we want to write 
+        user -> [str]                       : The name of the user as stated by username in JWT Token (The official username)
+        endpoint_storage -> [str]           : The name of the endpoint e.g. followings 
+
+        Outputs
+        =============
+        storage_url -> [str]                : Path the data is written to, for example - "gs://bucket-name/data/twitter/followers/2022/James2_202201020505"
+        '''
+        dataframe_length = dataframe.shape[0]
+        if dataframe_length > 250_000:  # Set max dataframe length as 250K rows
+            number_of_chunks = np.ceil(dataframe_length/250_000)
+            chunks = np.array_split(dataframe, number_of_chunks)
+        else:
+            chunks = [dataframe]
+
+        date_string = datetime.now().strftime("%Y%m%d%H%M")
+
+        for chunk_no, chunk in enumerate(chunks):
+            self.__write_files_to_gcs(
+                chunk, storage_url + f"{date_string}_chunk_{chunk_no}.csv")
+
+        return "gs://" + os.environ['GOOGLE_BUCKET_NAME'] + "/" + storage_url
+
+    def __write_files_to_gcs(self, df, write_path, sep="\t"):
+        url = "gs://" + self.bucket_name + "/" + write_path
+
+        with self.fs.open(url, "w") as f:
             df.to_csv(f, encoding="utf8", index=None, sep=sep)
 
     @staticmethod
@@ -78,3 +113,9 @@ class CloudUtility:
         destination = "%s.%s" % (database, tablename)
         df.to_gbq(destination_table=destination,
                   if_exists=mode)
+
+
+if __name__ == '__main__':  # For endpoint testing
+    c = CloudUtility()
+    print(c.read_files_from_gcs(
+        "trading/historical/Stock/NFLX/1D/2022-01-21/2022-05-08/"))
